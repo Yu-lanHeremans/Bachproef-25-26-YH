@@ -24,6 +24,7 @@
 # *.eps
 *.pdf
 !HeremansYu-lan-BPvoorstel.pdf
+!HeremansYu-lan-BP.pdf
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
