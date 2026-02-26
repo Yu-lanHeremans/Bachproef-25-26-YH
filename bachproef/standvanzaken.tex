@@ -7,45 +7,36 @@
 
 % Pas na deze inleidende paragraaf komt de eerste sectiehoofding.
 
-Dit hoofdstuk bevat je literatuurstudie. De inhoud gaat verder op de inleiding, maar zal het onderwerp van de bachelorproef *diepgaand* uitspitten. De bedoeling is dat de lezer na lezing van dit hoofdstuk helemaal op de hoogte is van de huidige stand van zaken (state-of-the-art) in het onderzoeksdomein. Iemand die niet vertrouwd is met het onderwerp, weet nu voldoende om de rest van het verhaal te kunnen volgen, zonder dat die er nog andere informatie moet over opzoeken \autocite{Pollefliet2011}.
 
-Je verwijst bij elke bewering die je doet, vakterm die je introduceert, enz.\ naar je bronnen. In \LaTeX{} kan dat met het commando \texttt{$\backslash${textcite\{\}}} of \texttt{$\backslash${autocite\{\}}}. Als argument van het commando geef je de ``sleutel'' van een ``record'' in een bibliografische databank in het Bib\LaTeX{}-formaat (een tekstbestand). Als je expliciet naar de auteur verwijst in de zin (narratieve referentie), gebruik je \texttt{$\backslash${}textcite\{\}}. Soms is de auteursnaam niet expliciet een onderdeel van de zin, dan gebruik je \texttt{$\backslash${}autocite\{\}} (referentie tussen haakjes). Dit gebruik je bv.~bij een citaat, of om in het bijschrift van een overgenomen afbeelding, broncode, tabel, enz. te verwijzen naar de bron. In de volgende paragraaf een voorbeeld van elk.
 
-\textcite{Knuth1998} schreef een van de standaardwerken over sorteer- en zoekalgoritmen. Experten zijn het erover eens dat cloud computing een interessante opportuniteit vormen, zowel voor gebruikers als voor dienstverleners op vlak van informatietechnologie~\autocite{Creeger2009}.
+\section{Lineage en provenance}
+\label{sec:lineage-provenance}
 
-Let er ook op: het \texttt{cite}-commando voor de punt, dus binnen de zin. Je verwijst meteen naar een bron in de eerste zin die erop gebaseerd is, dus niet pas op het einde van een paragraaf.
+Data lineage verwijst naar de volledige weg die data binnen een organisatie aflegt van de initiële bron tot het eindrapport of een andere analytische toepassing \autocite{VLAIO}. Het beschrijft zowel de herkomst van gegevens, alsook alle transformaties, uitbreidingen en afhankelijkheden van de data, doorheen verschillende systemen. Zoals \textcite{verma2024tracing} beschreven, bewegen datasets met verschillende stappen door een data-pipeline, waarbij deze continu van vorm veranderen. Data lineage documenteert deze opeenvolgende stappen en geeft inzicht in hoe de data wordt verzameld, verwerkt en uiteindelijk gebruikt binnen de organisatie.\\
 
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{grail.jpg}
-  \caption[Voorbeeld figuur.]{\label{fig:grail}Voorbeeld van invoegen van een figuur. Zorg altijd voor een uitgebreid bijschrift dat de figuur volledig beschrijft zonder in de tekst te moeten gaan zoeken. Vergeet ook je bronvermelding niet!}
-\end{figure}
 
-\begin{listing}
-  \begin{minted}{python}
-    import pandas as pd
-    import seaborn as sns
+In de literatuur wordt naast de term data lineage ook de term data provenance gebruikt. Hoewel ze vaak door elkaar gebruikt worden \autocite{mayernik2013data}, hebben ze elk een specifiek doel \autocite{infobelpro2025}. Lineage richt zich op de geschiedenis van de data en dependency graphs tussen data-resources \autocite{mayernik2013data}, oftewel de documentatie hoe data verwerkt wordt en beweegt door systemen \autocite{patel2020data}. Provenance focust daarentegen op de oorspong of bron van verwerkingsresultaten, de historische en contextuele achtergrond met informatie over systemen en processen \autocite{mayernik2013data,patel2020data}. In de praktijk worden beide idealiter gecombineerd. Op die manier ontstaat er een breder beeld van betrouwbaarheid, waarbij data lineage inzicht geeft in de dataflow en data provenance de oorsprong en authenticiteit van de data bewijst \autocite{infobelpro2025}.\\
 
-    penguins = sns.load_dataset('penguins')
-    sns.relplot(data=penguins, x="flipper_length_mm", y="bill_length_mm", hue="species")
-  \end{minted}
-  \caption[Voorbeeld codefragment]{Voorbeeld van het invoegen van een codefragment.}
-\end{listing}
 
-\lipsum[7-20]
+Binnen data-intensieve omgevingen worden lineage en provenance gezien als een cruciale component voor het garanderen van transparantie, herleidbaarheid en herbruikbaarheid van data \autocite{mayernik2013data}. Ze zorgen voor vertrouwen in de data, voorkomt misinterpretatie door gebruikers door de verwerkingsstappen van de data duidelijk te communiceren en helpt bij het beoordelen van data-kwaliteit en geschiktheid voor specifieke toepassingen \autocite{mayernik2013data}. Ook het traceren van fouten wordt efficiënter. Dit is zeer relevant in complexe en gedistribueerde data-architecturen met meerdere databronnen, transformatielagen en systemen zoals bijvoorbeeld een cloudomgeving \autocite{patel2020data}.\\
 
-\begin{table}
-  \centering
-  \begin{tabular}{lcr}
-    \toprule
-    \textbf{Kolom 1} & \textbf{Kolom 2} & \textbf{Kolom 3} \\
-    $\alpha$         & $\beta$          & $\gamma$         \\
-    \midrule
-    A                & 10.230           & a                \\
-    B                & 45.678           & b                \\
-    C                & 99.987           & c                \\
-    \bottomrule
-  \end{tabular}
-  \caption[Voorbeeld tabel]{\label{tab:example}Voorbeeld van een tabel.}
-\end{table}
+
+Een gebrek aan een goed gestructureerde lineage of provenance kan leiden tot een verminderde transparantie bij de totstandkoming van bepaalde resultaten. Wanneer afhankelijkheden onvoldoende gedocumenteerd zijn, wordt het moeilijker om foutdetecties of impactanalyses uit te voeren, wanneer datasets of processen gewijzigd worden \autocite{patel2020data}. Hierdoor neemt dus de controleerbaarheid van rapportages en impactanalyses af, wat potentieel negatieve gevolgen heeft voor de besluitvorming binnen een organisatie \autocite{verma2024tracing}. \textcite{patel2020data} benadrukken bovendien dat onvolledige herleidbaarheid in gedistribueerde of cloud-omgevingen het identificeren van fouten aanzienlijk kan vertragen.\\
+
+
+Een goede lineage-implementatie is volgens \textcite{tang2022modeling} niet zonder uitdagingen. Bestaande studies ondersteunen vaak geen volledige SQL of procedurele talen, waardoor complexe SQL-queries en procedurele structuren dus moeilijk te traceren zijn. Daarnaast kan een gebrek aan multi-granulariteit op tuple/value-niveau en een beperkte ondersteuning voor complexe transformatieprocessen leiden tot onvolledige afhankelijkheidsdetectie. Een effectieve toepassing vereist daarom robuuste modellen voor SQL-syntax en datatransformaties, naast governance voor consistente metadata.\\
+
+\section{Data lineage binnen data governance}
+\label{sec:lineage-governance}
+
+Data governance omvat alle principes en frameworks die het beheer van data structureren, met de nadruk op de beveiliging, regelgeving, processen, rollen en verantwoordelijkheden om data binnen een organisatie te beheren en strategisch te kunnen gebruiken \autocite{verma2024tracing}. \textcite{verma2024tracing} stellen dat een organisatie goede governance nodig heeft voor vlotte en duurzame operaties, met de focus op data-kwaliteit, veiligheid en compliance. Door het voorzien van gestandardiseerde data, definities en validatie regels, zorgt governance voor een groter vertrouwen in de data binnen een organisatie.\\
+
+
+Echter is het implementeren van governance geen simpele taak en vereist meerdere stappen en pre-condities, zoals onder andere executive support, duidelijke business objectives en een volledige inventory van de data \autocite{verma2024tracing}. Hoewel governance het vertrouwen in data via standaarden, definities en validatieregels wil verhogen, blijft dit moeilijk als er geen transparantie is in de oorsprong en de bewerkingen van de data. Dit is waar data lineage te pas komt. Het maakt zichtbaar waar de data vandaan komt, hoe ze wordt getransformeerd en waar ze naartoe gaat. \textcite{verma2024tracing} beschrijven dat data lineage een component van governance is dat zorgt voor transparantie, de sleutelvereiste voor effectieve governance. Daarnaast zorgt deze herleidbaarheid ook voor governance doelen zoals accountability, quality assurance, security en impact analysis.\\
+
+
+Naast deze governance doelen, speelt lineage ook een belangrijke rol als ondersteuning binnen regelgevings- en privacycontexten zoals GDPR (General Data Protection Regulation) of andere compliancevereisten. \textcite{malviya2025dbt} tonen aan dat transparante data lineage auditability of controleerbaarheid sterk verhoogt. Zo worden DSAR-verzoeken 64\% sneller afgehandeld en audit-evidence 80\% efficiënter samengesteld. Hierdoor kan een organisatie beter demonstreren dat ze regelgeving als GDPR naleven. Bovendien kan de transparantie ervoor zorgen dat een organisatie een betere relatie kan opbouwen met zijn stakeholders en met meer vertrouwen belangrijke beslissingen nemen \autocite{verma2024tracing}.\\
+
+
+In deze bachelorproef wordt dieper ingegaan op impactanalyse. Meer specifiek wordt onderzocht hoe data lineage als governance-tool kan bijdragen aan de transparantie, herleidbaarheid en betrouwbaarheid van impactanalyses.\\
 

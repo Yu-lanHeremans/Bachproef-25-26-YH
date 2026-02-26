@@ -15,38 +15,89 @@
 \section{Inleiding}%
 \label{sec:inleiding}
 
-Waarover zal je bachelorproef gaan? Introduceer het thema en zorg dat volgende zaken zeker duidelijk aanwezig zijn:
+\subsection{Onderzoeksopzet}
 
-\begin{itemize}
-  \item kaderen thema
-  \item de doelgroep
-  \item de probleemstelling en (centrale) onderzoeksvraag
-  \item de onderzoeksdoelstelling
-\end{itemize}
+In moderne bedrijven met complexe data omgevingen is een inzicht in data lineage, ofwel de volledige weg van bron tot rapport, inclusief alle transformaties en afhankelijkheden, cruciaal. Data lineage zorgt voor compliance, kwaliteitsbewaking en impactanalyse. Daarnaast zorgt het er ook voor dat organisaties snel kunnen reageren wanneer er data-fouten optreden. Echter is het integreren van een effectieve lineage-oplossing met bestaande databronnen en pipelines  uitdagend.
 
-Denk er aan: een typische bachelorproef is \textit{toegepast onderzoek}, wat betekent dat je start vanuit een concrete probleemsituatie in bedrijfscontext, een \textbf{casus}. Het is belangrijk om je onderwerp goed af te bakenen: je gaat voor die \textit{ene specifieke probleemsituatie} op zoek naar een goede oplossing, op basis van de huidige kennis in het vakgebied.
+\subsection{Probleemstelling}
 
-De doelgroep moet ook concreet en duidelijk zijn, dus geen algemene of vaag gedefinieerde groepen zoals \emph{bedrijven}, \emph{developers}, \emph{Vlamingen}, enz. Je richt je in elk geval op it-professionals, een bachelorproef is geen populariserende tekst. Eén specifiek bedrijf (die te maken hebben met een concrete probleemsituatie) is dus beter dan \emph{bedrijven} in het algemeen.
+Bij VLAIO wordt er gewerkt met grote hoeveelheden data voor hun impactanalyses, die uit vele bronnen en pipelines komen. Op dit moment is er nog een duidelijk gebrek aan een transparant lineage-systeem, waardoor data-engineers en business analisten niet altijd precies kunnen achterhalen waar gebruikte gegevens juist vandaan komen en welke transformaties deze hebben ondergaan. Dit zorgt voor vertraagde impactanalyses, een groter risco op fouten in rapportages en een verminderd vertrouwen in data-gedreven besluitvorming.
 
-Formuleer duidelijk de onderzoeksvraag! De begeleiders lezen nog steeds te veel voorstellen waarin we geen onderzoeksvraag terugvinden.
+\subsection{Onderzoeksvraag}
 
-Schrijf ook iets over de doelstelling. Wat zie je als het concrete eindresultaat van je onderzoek, naast de uitgeschreven scriptie? Is het een proof-of-concept, een rapport met aanbevelingen, \ldots Met welk eindresultaat kan je je bachelorproef als een succes beschouwen?
+Vanwege het belang van transparantie en herleidbaarheid in data-gedreven organisaties en de huidige tekortkomingen bij VLAIO rijst de centrale onderzoeksvraag:
+
+\begin{quote}
+\textbf{“In welke mate verhogen lineage-functionaliteit en API-integraties van OpenMetadata de transparantie en herleidbaarheid van impactanalyses bij VLAIO?}
+\end{quote}
+
+\noindent Om deze vraag goed te kunnen beantwoorden wordt het onderzoek opgesplits in deelvragen:\\
+
+
+\textbf{Deelvragen probleemdomein:}
+
+\begin{enumerate}
+    \item Wat is data lineage, welke rol speelt het in data governance en compliance, en welke risico's ontstaan wanneer lineage ontbreekt in complexe data-omgevingen?
+    \item In welke mate zijn de impactanalyse-rapporten bij VLAIO momenteel transparant en herleidbaar, en hoeveel tijd en moeite kost het om wijzigingen of fouten te analyseren?
+\end{enumerate}
+
+\textbf{Deelvragen oplossingsdomein:}
+\begin{enumerate}
+    \setcounter{enumi}{2} 
+    \item Wat zijn de kernfunctionaliteiten van data catalog en metadata management tools zoals OpenMetadata voor het beheren van data lineage via API-integraties en connectors?
+    \item Hoe volledig en nauwkeurig kan de lineage in OpenMetadata worden weergegeven voor representatieve impactanalyses bij VLAIO?
+    \item In welke mate verbetert OpenMetadata de analysetijd, traceerbaarheid en duidelijkheid van impactanalyse-rapporten voor verschillende stakeholders bij VLAIO?
+    \item Welke praktische barrières en aanbevelingen komen naar voren voor eventuele verdere implementatie van OpenMetadata binnen VLAIO?
+\end{enumerate}
+Vraag één en drie zullen via de literatuurstudie worden beantwoord. De andere deelvragen zullen empirisch worden onderzocht via een case study bij VLAIO.
+
+\subsection{Onderzoeksdoelstelling}
+
+Het doel van dit onderzoek is een kwalitatief en kwantitatief onderbouwde evaluatie, die aantoont in welke mate OpenMetadata de transparantie en herleidbaarheid van de impactanalyses bij VLAIO verbetert. Dit wordt getest met een case-study, waarbij voor- en nametingen vergeleken worden. Representatieve impactanalyse-rapporten zullen eerst geanalyseerd worden op meetbare criteria als traceerbaarheid, herleidbaarheid en duidelijkheid. Deze kunnen gemeten worden aan de hand van bijvoorbeeld een scorelijst met een score van 1–5 of met kwantitatieve metrics als het aantal stappen/kliks voor tracing en een percentage van fouten.
+De definitieve methode wordt gekozen op basis van pilot-tests.”
+De criteria kunnen gemeten worden aan de hand van een scorelijst (1–5‑schaal met ankers per criterium) of kwantitatieve metrics zoals het aantal stappen/kliks voor tracing en percentage foutieve herleidingen. De definitieve methode wordt na overleg met de copromotor bij VLAIO gekozen.
+Vervolgens wordt een proof-of-concept opgezet met OpenMetadata en zullen dezelfde criteria opnieuw gemeten en vergeleken worden. De doelgroep bestaat uit data-engineers en andere stakeholders bij VLAIO die kunnen bepalen op basis van dit onderzoek hoe ze lineage structureel in hun impactanalyses kunnen integreren en of dit de moeite is. Dit onderzoek geeft een evaluatie van de effecten van een lineage systeem met OpenMetadata door objectieve meetresultaten.
 
 %---------- Stand van zaken ---------------------------------------------------
 
 \section{Literatuurstudie}%
 \label{sec:literatuurstudie}
 
-Hier beschrijf je de \emph{state-of-the-art} rondom je gekozen onderzoeksdomein, d.w.z.\ een inleidende, doorlopende tekst over het onderzoeksdomein van je bachelorproef. Je steunt daarbij heel sterk op de professionele \emph{vakliteratuur}, en niet zozeer op populariserende teksten voor een breed publiek. Wat is de huidige stand van zaken in dit domein, en wat zijn nog eventuele open vragen (die misschien de aanleiding waren tot je onderzoeksvraag!)?
+\subsection{De rol van data lineage in data governance}
 
-Je mag de titel van deze sectie ook aanpassen (literatuurstudie, stand van zaken, enz.). Zijn er al gelijkaardige onderzoeken gevoerd? Wat concluderen ze? Wat is het verschil met jouw onderzoek?
+Data lineage verwijst naar de volledige weg die data in een organisatie aflegt van bron tot eindrapport \autocite{VLAIO}. Het beschrijft zowel de herkomst van de data, als alle transformaties die de data ondergaat en de afhankelijkheden ervan.
 
-Verwijs bij elke introductie van een term of bewering over het domein naar de vakliteratuur, bijvoorbeeld~\autocite{Hykes2013}! Denk zeker goed na welke werken je refereert en waarom.
+Zoals \textcite{Verma2024} beschreven, beweegt data met verschillende stappen door een data pipeline, waarbij deze continu van structuur verandert. Data lineage bevat alle informatie omtrent deze stroom van data en toont hoe data wordt verzameld, verwerkt en uiteindelijk gebruikt binnen de organisatie. Het omvat zaken zoals het volgen van bestemmingen van gegevens, validatiestappen, kwaliteitscontroles, impactanalyses en vergemakkelijkt het opsporen van fouten en problemen.  
 
-Draag zorg voor correcte literatuurverwijzingen! Een bronvermelding hoort thuis \emph{binnen} de zin waar je je op die bron baseert, dus niet er buiten! Maak meteen een verwijzing als je gebruik maakt van een bron. Doe dit dus \emph{niet} aan het einde van een lange paragraaf. Baseer nooit teveel aansluitende tekst op eenzelfde bron.
+Naast data lineage wordt er in veel literatuur ook gesproken over provenance \autocite{Secoda2024}. Data lineage is in feite het praktische aspect van provenance. Terwijl data lineage gaat over de route van data door verschillende systemen en processen, is provenance de hele geschiedenis en context die de data beschrijft. Een gebrek aan deze lineage of provenance zorgt ervoor dat het niet altijd duidelijk is wat nu tot een bepaald resultaat heeft geleid. Hierdoor ontstaat een verminderde controleerbaarheid van rapportages en impactanalyses, en een verhoogd risico op fouten in besluitvorming \autocite{Verma2024}.
 
-Als je informatie over bronnen verzamelt in JabRef, zorg er dan voor dat alle nodige info aanwezig is om de bron terug te vinden (zoals uitvoerig besproken in de lessen Research Methods).
+\subsection{Compliance en transparantie}
 
+Naast praktische voordelen zoals traceerbaarheid en foutopsporing is data lineage ook van belang in regelgevingscontexten als GDPR en andere compliance-vereisten \autocite{Collibra2025}. Hoewel het niet altijd wettelijk verplicht is voor een organisatie om een volledig lineage systeem te hebben,  is het essentieel om te kunnen aantonen waar gegevens vandaan komen, naar toe gaan en hoe ze verwerkt worden. Governance en lineage maken dit transparant en controleerbaar, wat zorgt voor betrouwbare rapportages en impactanalyses. Het ontbreken ervan daarentegen kan leiden tot compliance-risico’s, hogere auditkosten en een verminderd vertrouwen van de stakeholders in de data \autocite{Dataversity2025}.
+
+\subsection{Impactanalyses}
+
+Impactanalyses tonen aan welke gevolgen een wijziging of maatregel heeft op processen, systemen of personen binnen de organisatie en vereisen betrouwbare en reproduceerbare data \autocite{Verma2024}. Volledige data lineage is dus cruciaal voor het maken van goede impactanalyses. Een ontbrekende of onvolledige lineage kan het risico op foutieve conclusies verhogen en maakt daarnaast ook het analyseren van wijzigingen een traag proces \autocite{Bernardo2024}. Met lineage kan je zien hoe elke waarde in een rapport is ontstaan en waar deze vandaan komt, wat zorgt voor traceerbaarheid, reproduceerbaarheid en betrouwbaarheid \autocite{Wittner2022}. Data lineage draagt zo dus direct bij aan de transparantie en herleidbaarheid van impactanalyses, met als gevolg een hogere geloofwaardigheid van de resultaten voor stakeholders.
+
+\subsection{OpenMetadata als governance tool}
+
+OpenMetadata is een open-source tool die kan gebruikt worden voor data-catalogusbeheer en metadata management binnen een data-governance omgeving \autocite{OpenMetadataDocs2024}. Het biedt functionaliteiten voor het automatisch ontdekken van databronnen, table- en column-level lineage tracking en het monitoren van data kwaliteit. Daarnaast geeft het ook de mogelijkheid om met API-integraties OpenMetadata te koppelen aan vele andere systemen als PowerBI, Kafka, Snowflake, Databricks, enzovoort. Hierdoor kan je een volledig overzicht van de hele dataketen opbouwen. 
+
+\subsection{Praktijkervaringen met OpenMetadata}
+
+Meerdere organisaties hebben OpenMetadata reeds succesvol geïmplementeerd voor data governance. Bij Carrefour Brazil bijvoorbeeld leidde de implementatie tot een lineage-systeem met datakwaliteits-monitoring, automatische tracking voor kritieke dataflows en zorgde dat meer dan 500 gebruikers betrouwbaar de juiste bronnen kunnen vinden \autocite{OpenMetadataCarrefour2024}. Ook \autocite{OpenMetadataIndrive2024} beschrijft hoe inDrive OpenMetadata succesvol inzet met meer dan 100 AWS-databases, voor compliance automation en een data-governance systeem op globale schaal. Nog een relevante case is van FREENOW, waar het werd ingezet voor het beheren van ongeveer 17.000 data-assets en meer dan 300 downstream dependencies aan de hand van API-integraties \autocite{OpenMetadataFreenow2024}. Deze voorbeelden uit de praktijk tonen aan dat OpenMetadata geschikt is voor complexe data-omgevingen met uitgebreide integratie-vereisten, vergelijkbaar met de situatie bij VLAIO.
+Community discussies op r/dataengineering en r/bigdata bevestigen positieve ervaringen met deployment en extensibiliteit van OpenMetadata \autocite{RedditCommunities2025}.
+ 
+
+\subsection{Best practices}
+
+Uit meerdere literatuur- en casestudies komen verschillende succesfactoren naar voren bij het implementeren van data lineage. \autocite{Bernardo2024} benadrukt in een systematische review over data-governance dat organisaties de beste resultaten behalen, wanneer ze de implementatie in fases aanpakken. Door te starten met een kleiner aantal kritieke dataflows, geraken ze vertrouwd met het systeem, waardoor ze daarna kunnen uitbreiden naar de rest van het datalandschap. Dit zou volgens hen beter werken dan een big-bangimplementatie, die complex en risicovol is.  
+
+Daarnaast zijn managementondersteuning en duidelijke verantwoordelijkheden van belang bij het succesvol integreren van lineage/governance projecten \autocite{Dataversity2025}. Een veelvoorkomende uitdaging is de complexiteit van de bestaande data-omgevingen, verzet tegen veranderingen van medewerkers en technische beperkingen zoals automatisch detecteren van lineage bij legacy-systemen \autocite{Secoda2024}. De best practise is om te starten met goed gedocumenteerde, moderne systemen en stapsgewijs uit te breiden.
+
+\subsection{Onderzoeksleemte}
+
+Er bestaat reeds literatuur over data governance en uitgebreide documentatie over de functionaliteiten die tools als OpenMetadata bieden. Wat er echter nog mist is kwantitatief onderzoek dat de impact van lineage-implementaties op operationele processen als impactanalyses, systematisch meet. De huidige studies zijn voornamelijk kwalitatief en gaan niet in op voor- en nametingen van specifieke indicatoren, als traceerbaarheid en ervaring van stakeholders. Dit onderzoek onderscheidt zich door de impact van OpenMetadata op impactanalyses bij VLAIO te evalueren. Op deze manier wordt het duidelijk of het implementeren van een lineage-syteem met OpenMetadata daadwerkelijk bijdraagt aan de transparantie, herleidbaarheid en efficiëntie van impactanalyses in de praktijk.
 % Voor literatuurverwijzingen zijn er twee belangrijke commando's:
 % \autocite{KEY} => (Auteur, jaartal) Gebruik dit als de naam van de auteur
 %   geen onderdeel is van de zin.
@@ -54,31 +105,121 @@ Als je informatie over bronnen verzamelt in JabRef, zorg er dan voor dat alle no
 %   functie heeft in de zin (bv. ``Uit onderzoek door Doll & Hill (1954) bleek
 %   ...'')
 
-Je mag deze sectie nog verder onderverdelen in subsecties als dit de structuur van de tekst kan verduidelijken.
-
 %---------- Methodologie ------------------------------------------------------
 \section{Methodologie}%
 \label{sec:methodologie}
 
-Hier beschrijf je hoe je van plan bent het onderzoek te voeren. Welke onderzoekstechniek ga je toepassen om elk van je onderzoeksvragen te beantwoorden? Gebruik je hiervoor literatuurstudie, interviews met belanghebbenden (bv.~voor requirements-analyse), experimenten, simulaties, vergelijkende studie, risico-analyse, PoC, \ldots?
+\subsection{Voorbereidende fase: Literatuurstudie}
+Voordat de case study start, wordt een literatuurstudie uitgevoerd om deelvraag 1 te beantwoorden. Dit omvat:
+\begin{itemize}
+\item Analyse van data lineage concepten en best practices (Verma2024, Bernardo2024)
+\item Vergelijking van OpenMetadata met alternatieven (OpenMetadataDocs2024)
+\item Review relevante metrics voor data governance evaluatie
+\end{itemize}
 
-Valt je onderwerp onder één van de typische soorten bachelorproeven die besproken zijn in de lessen Research Methods (bv.\ vergelijkende studie of risico-analyse)? Zorg er dan ook voor dat we duidelijk de verschillende stappen terug vinden die we verwachten in dit soort onderzoek!
+\textbf{Deliverable}: Afgewerkte literatuurstudie.
 
-Vermijd onderzoekstechnieken die geen objectieve, meetbare resultaten kunnen opleveren. Enquêtes, bijvoorbeeld, zijn voor een bachelorproef informatica meestal \textbf{niet geschikt}. De antwoorden zijn eerder meningen dan feiten en in de praktijk blijkt het ook bijzonder moeilijk om voldoende respondenten te vinden. Studenten die een enquête willen voeren, hebben meestal ook geen goede definitie van de populatie, waardoor ook niet kan aangetoond worden dat eventuele resultaten representatief zijn.
+\subsection{Fase 1: Analyse huidige situatie en nulmeting (3 weken)}
 
-Uit dit onderdeel moet duidelijk naar voor komen dat je bachelorproef ook technisch voldoen\-de diepgang zal bevatten. Het zou niet kloppen als een bachelorproef informatica ook door bv.\ een student marketing zou kunnen uitgevoerd worden.
+Dit onderzoek zal een toegepaste case study zijn met een voor en nameting om de impact van OpenMetadata op de transparantie en herleidbaarheid van impactanalyses bij VLAIO te evalueren. De methodologie is opgedeeld in vier fasen, waarbij elke fase concrete, meetbare resultaten oplevert.
 
-Je beschrijft ook al welke tools (hardware, software, diensten, \ldots) je denkt hiervoor te gebruiken of te ontwikkelen.
+In deze fase wordt de huidige situatie bij VLAIO geanalyseerd om de tweede deelvraag van het probleemdomein te beantwoorden. In overleg met de co-promotor worden representatieve impactanalyse-rapporten gekozen die regelmatig worden opgesteld en verschillende databronnen en transformaties omvatten. Voor deze rapporten worden volgende indicatoren gemeten:
 
-Probeer ook een tijdschatting te maken. Hoe lang zal je met elke fase van je onderzoek bezig zijn en wat zijn de concrete \emph{deliverables} in elke fase?
+\begin{description}
+    \item[Traceerbaarheid] Hoeveel stappen in de dataflow (van bron tot rapport) kunnen momenteel expliciet worden geïdentificeerd en gedocumenteerd? Dit wordt gemeten door per rapport te inventariseren welke bronnen, transformaties en tussenresultaten beschreven zijn in de huidige documentatie. Een voorbeeld hiervan is: ETL → Data Warehouse → Power BI (3 traceerbare stappen). 
+    \item[Analysetijd] Hoeveel tijd kost het om de impact van een schemawijziging of datafout te analyseren? Dit wordt gemeten door een gecontroleerde oefening uit te voeren waarbij een fictieve wijziging wordt gesimuleerd en de tijd met een timer wordt bijgehouden die nodig is om alle geraakte downstream-componenten te identificeren. Deze oefening kan toegepast worden op meerdere data-engineers bij VLAIO waarbij dan de gemiddelde tijd wordt genomen. 
+
+    \item[Duidelijkheid] Hoe begrijpelijk zijn de huidige rapporten en documentatie over dataherkomst voor verschillende stakeholders? Dit kan kwalitatief geëvalueerd worden via korte surveys met 3–5 stakeholders (data engineers en business analisten).
+\end{description}
+
+Tijdens deze fase worden ook de bestaande data-architecturen gedocumenteerd: welke databronnen (bijvoorbeeld databases, data warehouses, ETL/ELT-tools), pipelines (bijvoorbeeld Apache Airflow, dbt) en rapportage-tools (bijvoorbeeld Power BI) zijn relevant voor de geselecteerde impactanalyses?
+
+\textbf{Deliverables:}
+\begin{itemize}
+    \item Inventarisatiedocument met geselecteerde impactanalyse-rapporten en beschrijving van de huidige data-architectuur
+    \item Nulmeting-rapport met kwantitatieve metrics (aantal traceerbare stappen, analysetijd) en kwalitatieve inzichten (knelpunten, onduidelijkheden)
+\end{itemize}
+
+\subsection{Fase 2: Ontwerp en implementatie proof-of-concept (4 weken)}
+In deze fase wordt er een proof-of-concept met OpenMetadata ontworpen en geïmplementeerd. De PoC richt zich op de geselecteerde impactanalyse-rapporten en omvat:
+
+\begin{description}
+    \item[Installatie en configuratie] OpenMetadata wordt geïnstalleerd in een testomgeving bij VLAIO. De basisinstellingen worden geconfigureerd, waaronder gebruikersbeheer, toegangsrechten en organisatiestructuur, ...
+
+    \item[Connectoren en integraties] Via de beschikbare connectors en API's van OpenMetadata worden de relevante databronnen, pipelines en BI-tools aangesloten. Dit omvat bijvoorbeeld volgende zaken:
+    \begin{itemize}
+        \item Databronnen (bijv. PostgreSQL, Snowflake, Databricks)
+        \item ETL/ELT-tools (bijv. Apache Airflow, dbt)
+        \item Rapportage-tools (bijv. Power BI, Tableau)
+    \end{itemize}
+
+    \item[Lineage-configuratie] Table-level en waar mogelijk column-level lineage wordt geconfigureerd voor de dataflows die invloed hebben op de geselecteerde impactanalyse-rapporten. Hierbij wordt gebruikgemaakt van automatische lineage-detectie waar beschikbaar, en handmatige aanvulling waar nodig.
+    \item[Metadata-verrijking] Relevante metadata wordt toegevoegd om de context en betekenis van datasets en transformaties te verduidelijken.
+    \item[Documentatie] Alle stappen, configuraties en eventuele aanpassingen worden gedocumenteerd om reproduceerbaarheid te waarborgen en als basis te dienen voor toekomstig vervolg.
+\end{description}
+
+Tijdens deze fase worden ook eventuele technische uitdagingen of beperkingen geïdentificeerd en gedocumenteerd.
+
+\textbf{Deliverables:}
+\begin{itemize}
+    \item Werkende proof-of-concept van OpenMetadata met geconfigureerde lineage voor de geselecteerde impactanalyses
+    \item Technische documentatie en installatiehandleiding
+    \item Logboek met geïdentificeerde uitdagingen en oplossingen
+\end{itemize}
+
+\subsection{Fase 3: Nameting en evaluatie (2 weken)}
+Na de implementatie van de PoC wordt een nameting uitgevoerd met dezelfde indicatoren als in fase 1, om de impact van OpenMetadata te kunnen meten.
+Daarnaast kunnen in deze fase ook praktische barrières en succesfactoren geïdentificeerd worden via surveys/interviews met betrokkenen. Bijvoorbeeld: Wat viel op tijdens het gebruik van OpenMetadata? Welke functionaliteiten zijn het meest waardevol? Waar liggen beperkingen of verbeterpunten?
+
+\textbf{Deliverables:}
+\begin{itemize}
+    \item Nameting-rapport met kwantitatieve metrics en vergelijking met de nulmeting
+    \item Kwalitatieve analyse van stakeholder-ervaringen en geïdentificeerde barrières
+    \item Aanbevelingen voor verdere implementatie en uitrol
+\end{itemize}
+
+\subsection{Fase 4: Analyse, rapportage en aanbevelingen (3 weken)}
+
+In de laatste fase worden alle verzamelde gegevens geanalyseerd en wordt de bachelorproef uitgeschreven. De kwantitatieve resultaten (traceerbaarheid, analysetijd) worden statistisch vergeleken tussen de voor- en nameting om vast te stellen of er significante verbeteringen zijn. De kwalitatieve inzichten uit interviews en observaties worden thematisch geanalyseerd om patronen, succesfactoren en uitdagingen te identificeren.
+
+\textbf{Deliverables:}
+\begin{itemize}
+    \item Volledige bachelorproefscriptie met resultaten, analyse, conclusies en aanbevelingen
+\end{itemize}
+
+\subsection{Tools en technologieën}
+\begin{itemize}
+    \item OpenMetadata: Open-source data catalog en metadata management platform
+    \item Databronnen en pipelines bij VLAIO: Afhankelijk van de bestaande infrastructuur (bijv. PostgreSQL, Snowflake, Databricks, Apache Airflow, dbt, Power BI)
+    \item Documentatietools: Microsoft Word/LaTeX voor documentatie en rapportage
+    \item Tijdmeting: Eenvoudige tijdregistratievoor het meten van analysetijden
+    \item Survey: Likert-schaal (1–5) voor kwalitatieve beoordeling van duidelijkheid
+\end{itemize}
 
 %---------- Verwachte resultaten ----------------------------------------------
 \section{Verwacht resultaat, conclusie}%
 \label{sec:verwachte_resultaten}
 
-Hier beschrijf je welke resultaten je verwacht. Als je metingen en simulaties uitvoert, kan je hier al mock-ups maken van de grafieken samen met de verwachte conclusies. Benoem zeker al je assen en de onderdelen van de grafiek die je gaat gebruiken. Dit zorgt ervoor dat je concreet weet welk soort data je moet verzamelen en hoe je die moet meten.
+Op basis van de literatuur en de geplande case-study bij VLAIO worden de volgende resultaten verwacht:
 
-Wat heeft de doelgroep van je onderzoek aan het resultaat? Op welke manier zorgt jouw bachelorproef voor een meerwaarde?
+\begin{itemize}
+    \item \textbf{Verbeterde traceerbaarheid:} Na implementatie van OpenMetadata wordt verwacht dat een groter aantal stappen in de dataflow van bron tot rapport expliciet zichtbaar en gedocumenteerd is. Dit zal kwantitatief gemeten worden door het aantal traceerbare bronnen, transformaties en tussenresultaten per impactanalyse-rapport te tellen.
+    
+    \item \textbf{Verminderde analysetijd:} Door gebruik van lineage-visualisaties in OpenMetadata wordt verwacht dat de tijd om de impact van wijzigingen of fouten te analyseren afneemt. Deze tijd wordt kwantitatief gemeten door gecontroleerde simulaties van fictieve wijzigingen, waarbij de benodigde tijd voor identificatie van downstream-componenten wordt geregistreerd.
+    
+    \item \textbf{Verbeterde duidelijkheid van rapporten:} Het gebruik van OpenMetadata maakt de structuur en herkomst van data inzichtelijker voor stakeholders. Dit wordt kwalitatief geëvalueerd met een scorecard (Likert-schaal 1--5) voor begrijpelijkheid en bruikbaarheid van de rapporten en lineage-visualisaties.
+    
+    \item \textbf{Identificatie van praktische barrières en succesfactoren:} Het onderzoek zal inzicht geven in welke functionaliteiten van OpenMetadata het meest waardevol zijn en welke beperkingen of uitdagingen er bestaan bij de implementatie in een complexe data-omgeving zoals bij VLAIO.
+\end{itemize}
 
-Hier beschrijf je wat je verwacht uit je onderzoek, met de motivatie waarom. Het is \textbf{niet} erg indien uit je onderzoek andere resultaten en conclusies vloeien dan dat je hier beschrijft: het is dan juist interessant om te onderzoeken waarom jouw hypothesen niet overeenkomen met de resultaten.
+\subsection*{Verwachte conclusies}
+Op basis van de metingen en evaluaties wordt verwacht dat OpenMetadata concreet bijdraagt aan:
+\begin{itemize}
+    \item Hogere transparantie en herleidbaarheid van impactanalyses
+    \item Betere reproduceerbaarheid en betrouwbaarheid van rapportages
+    \item Efficiëntere processen bij analyse van wijzigingen en fouten
+    \item Praktische aanbevelingen voor verdere implementatie binnen VLAIO
+\end{itemize}
 
+\subsection*{Meerwaarde voor de doelgroep}
+De resultaten van dit onderzoek bieden VLAIO een objectief en kwantitatief onderbouwd inzicht in de effecten van een lineage-tool. Data engineers en business analisten krijgen een beter overzicht van de volledige dataflow en kunnen sneller en betrouwbaarder impactanalyses uitvoeren. Bovendien levert het onderzoek concrete aanbevelingen op voor het structureel integreren van OpenMetadata binnen de organisatie, waardoor toekomstige projecten tijds- en foutreductie realiseren.

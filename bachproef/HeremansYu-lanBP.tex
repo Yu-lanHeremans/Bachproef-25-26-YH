@@ -49,16 +49,16 @@
 
 %%---------- Document metadata -------------------------------------------------
 % TODO: Replace this with your own information
-\author{Ernst Aarden}
-\supervisor{Dhr. F. Van Houte}
-\cosupervisor{Mevr. S. Beeckman}
+\author{Yu-lan Heremans}
+\supervisor{Dhr. S. Lievens}
+\cosupervisor{Dhr. K. Coenye}
 \title[Optionele ondertitel]%
-    {Titel van de bachelorproef}
+    {Verbeteren van transparantie en herleidbaarheid van impactanalyses bij VLAIO met OpenMetadata}
 \academicyear{\advance\year by -1 \the\year--\advance\year by 1 \the\year}
 \examperiod{1}
 \degreesought{\IfLanguageName{dutch}{Professionele bachelor in de toegepaste informatica}{Bachelor of applied computer science}}
 \partialthesis{false} %% To display 'in partial fulfilment'
-%\institution{Internshipcompany BVBA.}
+\institution{Internshipcompany VLAIO.}
 
 %% Add global exceptions to the hyphenation here
 \hyphenation{back-slash}
@@ -153,9 +153,18 @@
 Het onderwerp van deze bachelorproef is gebaseerd op een onderzoeksvoorstel dat vooraf werd beoordeeld door de promotor. Dat voorstel is opgenomen in deze bijlage.
 
 %% TODO: 
-%\section*{Samenvatting}
-
+\section*{Samenvatting}
 % Kopieer en plak hier de samenvatting (abstract) van je onderzoeksvoorstel.
+
+In complexe data-omgevingen als VLAIO worden er zeer grote hoeveelheden aan data verwerkt, uit diverse bronnen en pipelines. Dit zorgt ervoor dat het voor data engineers en stakeholders niet altijd duidelijk is waar deze data vandaan komt en welke transformaties eraan voorafgingen. Dit zorgt voor trage impactanalyses en een verhoogd risico op fouten in rapportage. Er is dus nood aan een betrouwbaar lineage-systeem dat de herleidbaarheid van impactanalyses overzichtelijk maakt. 
+Om deze behoefte aan een betrouwbaar lineage-systeem te onderzoeken wordt er een case study uitgevoerd met metingen voor en na het invoeren van een proof-of-concept in OpenMetadata. Een aantal impactanalyse-rapporten zullen geëvalueerd worden op meetbare criteria als traceerbaarheid van de berekeningsstappen, tijdsduur van wijzigingsanalyses en duidelijkheid van de rapportages voor de stakeholders. Tijdens deze metingen worden er bron- en schemawijzigingen gesimuleerd om de effecten op de herleidbaarheid systematisch te meten.
+De verwachte resultaten zijn een aantoonbare verbetering in de transparantie van de dataflows, een hogere mate van traceerbaarheid van berekeningen en een verhoogde duidelijkheid van de rapportage.
+Als deze verwachte resultaten bevestigd worden, betekent dit dat OpenMetadata een geschikte tool is om de impactanalyse bij VLAIO beter herleidbaar en transparanter te maken, met dus als gevolg een meer betrouwbare datagedreven besluitvorming.
+De centrale onderzoeksvraag van deze bachelorproef luidt: 
+\begin{quote}
+\textbf{“In welke mate verhogen lineage-functionaliteit en API-integraties van OpenMetadata de transparantie en herleidbaarheid van impactanalyses bij VLAIO?}
+\end{quote}
+
 
 % Verwijzing naar het bestand met de inhoud van het onderzoeksvoorstel
 \input{../voorstel/voorstel-inhoud}
