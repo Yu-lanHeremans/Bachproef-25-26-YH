@@ -5,46 +5,61 @@
 \chapter{\IfLanguageName{dutch}{Inleiding}{Introduction}}%
 \label{ch:inleiding}
 
-De inleiding moet de lezer net genoeg informatie verschaffen om het onderwerp te begrijpen en in te zien waarom de onderzoeksvraag de moeite waard is om te onderzoeken. In de inleiding ga je literatuurverwijzingen beperken, zodat de tekst vlot leesbaar blijft. Je kan de inleiding verder onderverdelen in secties als dit de tekst verduidelijkt. Zaken die aan bod kunnen komen in de inleiding~\autocite{Pollefliet2011}:
-
-\begin{itemize}
-  \item context, achtergrond
-  \item afbakenen van het onderwerp
-  \item verantwoording van het onderwerp, methodologie
-  \item probleemstelling
-  \item onderzoeksdoelstelling
-  \item onderzoeksvraag
-  \item \ldots
-\end{itemize}
+In moderne organisaties worden beslissingen steeds vaker genomen op basis van grote hoeveelheden data die uit uiteenlopende bronnen en pipelines samenkomen. Binnen zulke complexe data‑omgevingen is het essentieel om te begrijpen waar gegevens vandaan komen, welke transformaties ze doorlopen en hoe ze uiteindelijk in rapporten terechtkomen. Een gebrek aan transparantie over deze dataflow bemoeilijkt niet alleen het uitvoeren van betrouwbare impactanalyses bij wijzigingen, maar tast ook het vertrouwen in data‑gedreven besluitvorming aan. In deze bachelorproef wordt dit probleem onderzocht in de context van het Vlaams Agentschap Innoveren en Ondernemen (VLAIO), waar data intensief wordt gebruikt voor impactanalyses rond steunmaatregelen en ondernemerschap.
 
 \section{\IfLanguageName{dutch}{Probleemstelling}{Problem Statement}}%
 \label{sec:probleemstelling}
 
-Uit je probleemstelling moet duidelijk zijn dat je onderzoek een meerwaarde heeft voor een concrete doelgroep. De doelgroep moet goed gedefinieerd en afgelijnd zijn. Doelgroepen als ``bedrijven,'' ``KMO's'', systeembeheerders, enz.~zijn nog te vaag. Als je een lijstje kan maken van de personen/organisaties die een meerwaarde zullen vinden in deze bachelorproef (dit is eigenlijk je steekproefkader), dan is dat een indicatie dat de doelgroep goed gedefinieerd is. Dit kan een enkel bedrijf zijn of zelfs één persoon (je co-promotor/opdrachtgever).
+Bij VLAIO worden impactanalyses opgesteld op basis van data die afkomstig is uit verschillende operationele systemen, databronnen en verwerkingspijplijnen. Ondanks deze rijke data‑omgeving is er vandaag geen volledig transparant en geïntegreerd lineage‑systeem beschikbaar waarmee data‑engineers en businessanalisten eenvoudig kunnen nagaan welke stappen gegevens doorlopen tussen bron en rapport. Daardoor is het voor betrokken stakeholders vaak onduidelijk welke databronnen aan de basis liggen van een bepaald cijfer, welke transformaties of business rules zijn toegepast en welke rapporten of dashboards geraakt worden door een wijziging. Dit leidt tot trage en arbeidsintensieve impactanalyses, een verhoogd risico op fouten in rapportering en een verminderde verklaarbaarheid van de resultaten naar beleidsmakers toe.
+
+De doelgroep van dit onderzoek bestaat in eerste instantie uit de data‑engineers, analisten en rapportbouwers binnen VLAIO die verantwoordelijk zijn voor het ontwikkelen en onderhouden van data‑pijplijnen en impactanalyses. Daarnaast zijn ook beleidsmedewerkers en andere besluitvormers indirect gebaat bij meer transparantie, omdat dit de betrouwbaarheid en reproduceerbaarheid van de analyses waarop zij steunen, verhoogt.
 
 \section{\IfLanguageName{dutch}{Onderzoeksvraag}{Research question}}%
 \label{sec:onderzoeksvraag}
 
-Wees zo concreet mogelijk bij het formuleren van je onderzoeksvraag. Een onderzoeksvraag is trouwens iets waar nog niemand op dit moment een antwoord heeft (voor zover je kan nagaan). Het opzoeken van bestaande informatie (bv. ``welke tools bestaan er voor deze toepassing?'') is dus geen onderzoeksvraag. Je kan de onderzoeksvraag verder specifiëren in deelvragen. Bv.~als je onderzoek gaat over performantiemetingen, dan 
+Om de geschetste problemen aan te pakken zet VLAIO in op een metadataplatform met geïntegreerde data lineage. In deze bachelorproef staat de volgende centrale onderzoeksvraag centraal:
+
+\begin{quote}
+\textbf{In welke mate verhogen de lineage‑functionaliteit en API‑integraties van OpenMetadata de transparantie en herleidbaarheid van impactanalyses bij VLAIO?}
+\end{quote}
+
+Om deze vraag concreet te kunnen beantwoorden, wordt ze opgesplitst in een aantal deelvragen.
+
+\textbf{Deelvragen probleemdomein:}
+
+\begin{enumerate}
+    \item Wat is data lineage, welke rol speelt het in data governance en compliance, en welke risico's ontstaan wanneer lineage ontbreekt in complexe data‑omgevingen?
+    \item In welke mate zijn de impactanalyse‑rapporten bij VLAIO momenteel transparant en herleidbaar, en hoeveel tijd en moeite kost het om wijzigingen of fouten te analyseren?
+\end{enumerate}
+
+\textbf{Deelvragen oplossingsdomein:}
+
+\begin{enumerate}
+    \setcounter{enumi}{2}
+    \item Wat zijn de kernfunctionaliteiten van data‑catalogus‑ en metadata‑managementtools zoals OpenMetadata voor het beheren van data lineage via API‑integraties en connectors?
+    \item Hoe volledig en nauwkeurig kan de lineage in OpenMetadata worden weergegeven voor representatieve impactanalyses bij VLAIO?
+    \item In welke mate verbetert OpenMetadata de analysetijd, traceerbaarheid en duidelijkheid van impactanalyse‑rapporten voor verschillende stakeholders bij VLAIO?
+    \item Welke praktische barrières en aanbevelingen komen naar voren voor een eventuele verdere implementatie van OpenMetadata binnen VLAIO?
+\end{enumerate}
+
+De eerste en derde deelvraag worden hoofdzakelijk beantwoord op basis van literatuuronderzoek en documentanalyse. De overige deelvragen worden empirisch onderzocht via een case‑study binnen VLAIO.
 
 \section{\IfLanguageName{dutch}{Onderzoeksdoelstelling}{Research objective}}%
 \label{sec:onderzoeksdoelstelling}
 
-Wat is het beoogde resultaat van je bachelorproef? Wat zijn de criteria voor succes? Beschrijf die zo concreet mogelijk. Gaat het bv.\ om een proof-of-concept, een prototype, een verslag met aanbevelingen, een vergelijkende studie, enz.
+Het doel van deze bachelorproef is om een kwalitatief en kwantitatief onderbouwde evaluatie te geven van de mate waarin OpenMetadata de transparantie en herleidbaarheid van impactanalyses bij VLAIO kan verbeteren. Concreet wordt een proof‑of‑concept van OpenMetadata opgezet rond een aantal representatieve impactanalyse‑rapporten. Voor deze cases worden eerst nulmetingen uitgevoerd op basis van drie procesindicatoren: (1) traceerbaarheid van de dataflow van bron tot rapport, (2) analysetijd voor het bepalen van de impact van een gesimuleerde wijziging en (3) duidelijkheid van de dataherkomst voor betrokken stakeholders. Na de implementatie van OpenMetadata worden dezelfde indicatoren opnieuw gemeten, zodat voor‑ en nametingen kunnen worden vergeleken.
+
+De beoogde resultaten zijn enerzijds een objectief beeld van de meerwaarde van OpenMetadata voor het impactanalyseproces bij VLAIO, en anderzijds concrete aanbevelingen over hoe data‑engineers en analisten lineage structureel kunnen integreren in hun werkwijze.
 
 \section{\IfLanguageName{dutch}{Opzet van deze bachelorproef}{Structure of this bachelor thesis}}%
 \label{sec:opzet-bachelorproef}
 
-% Het is gebruikelijk aan het einde van de inleiding een overzicht te
-% geven van de opbouw van de rest van de tekst. Deze sectie bevat al een aanzet
-% die je kan aanvullen/aanpassen in functie van je eigen tekst.
-
 De rest van deze bachelorproef is als volgt opgebouwd:
 
-In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein, op basis van een literatuurstudie.
+In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken rond data lineage, metadata‑management en impactanalyses, met bijzondere aandacht voor tools als OpenMetadata en voor bestaande praktijkervaringen.
 
-In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht en worden de gebruikte onderzoekstechnieken besproken om een antwoord te kunnen formuleren op de onderzoeksvragen.
+In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht. Daarbij wordt beschreven hoe de case‑study bij VLAIO is opgezet, hoe de nulmeting en nameting worden uitgevoerd en welke meetinstrumenten worden gebruikt voor traceerbaarheid, analysetijd en duidelijkheid.
 
-% TODO: Vul hier aan voor je eigen hoofstukken, één of twee zinnen per hoofdstuk
+In het daaropvolgende hoofdstuk (zie Hoofdstuk~\ref{ch:resultaten}) worden de resultaten van de proof‑of‑concept en de metingen bij VLAIO gepresenteerd en geïnterpreteerd in functie van de onderzoeksvragen.
 
-In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.
+In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt een synthese gemaakt van de belangrijkste bevindingen en wordt een antwoord geformuleerd op de centrale onderzoeksvraag en deelvragen. Daarnaast worden beperkingen van het onderzoek besproken en worden voorstellen gedaan voor toekomstig werk binnen dit domein.

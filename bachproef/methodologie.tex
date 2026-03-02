@@ -26,5 +26,34 @@
 %% Maak voor elke fase (behalve het literatuuronderzoek) een NIEUW HOOFDSTUK aan
 %% en geef het een gepaste titel.
 
-\lipsum[21-25]
+\section{Methodologie}
+
+In deze bachelorproef wordt een toegepaste case study uitgevoerd bij VLAIO met een voor- en nameting om te evalueren in welke mate OpenMetadata de transparantie en herleidbaarheid van impactanalyses verbeterd. In dit hoofdstuk wordt uitgelicht hoe de case studie opgebouwd is. De aanpak bestaat uit vier fasen: 1) analyse en nulmeting, 2) ontwerp en implementatie van een proof-of-concept of PoC, 3) nameting en evaluatie, en 4) analyse, rapportage en aanbevelingen. Deze systematische aanpak laat toe om dezelfde indicatoren voor en na het implementeren can de PoC op een consistente manier te vergelijken, en tegelijk praktische implementatie-aspecten zoals barrières en succesfactoren te documenteren.​\\
+
+Binnen dit onderzoek verwijst 'transparantie' naar interne, governancegerichte transparantie voor data engineers, analisten, audit en rapportgebruikers en niet naar publieke openbaarheid. De PoC en metingen gebeuren binnen de AVG/GDPR-randvoorwaarden van VLAIO zoals onder andere dataminimalisatie en gepaste toegangscontrole. Bij de interpretatie van resultaten wordt rekening gehouden met socio-organisatorische effecten: verbeteringen kunnen mede ontstaan doordat impliciete kennis tijdens de PoC expliciet gedocumenteerd en gecentraliseerd wordt. Resultaten worden daarom gerapporteerd als geldig binnen de PoC-scope en als input voor verdere besluitvorming, niet als bewijs van structurele werking op volledige schaal.\\
+
+\subsection{Fase 1: Analyse huidige situatie en nulmeting}
+
+Het doel van deze eerste fase is het onderzoeken hoe impactanalyses worden uitgevoerd en het vastleggen van een nulmeting voor representatieve impactanalyse rapporten binnen VLAIO. In overleg met de co-promotor worden representatieve rapporten gekozen die complex genoeg zijn, dus meerdere databronnen en transformaties bevatten en regelmatig voorkomen. Vervolgens worden de volgende indicatoren vastgelegd en gemeten: 1) de traceerbaarheid van het aantal stappen in de dataflow, 2) de analysetijd voor het bepalen van de downstream-impact bij een gesimuleerde wijziging, 3) de duidelijkheid van de dataherkomst voor stakeholders.\\
+
+\textbf{Deliverable}: beschrijving van geselecteerde impactanalyse-rapporten en nulmetingsrapport met indicatoren.\\
+
+\subsection{Fase 2: Ontwerp en implementatie proof-of-concept}
+
+Doel van deze fase is het opzetten van een PoC in OpenMetadata voor de geselecteerde impactanalyse-rapporten en hun relevante dataflows. OpenMetadata wordt geïnstalleerd en geconfigureerd in een testtomgeving, waarna relevante databronnen, pipelines en rapportagetooling gekoppeld worden via beschikbare connectoren en API integraties. Ten slotte wordt lineage op table-level en waar mogelijk op column-level opgebouwd via automatische detectie en waar nodig manuele aanvulling, en wordt metadata verrijkt om interpretatie en herleidbaarheid te ondersteunen.​\\
+
+\textbf{Deliverable}: werkende PoC, technische configuratie en handleiding, logboek met technische issues en keuzes.​\\
+
+\subsection{Fase 3: Nameting en evaluatie}
+
+Doel van deze fase is het uitvoeren van een nameting met dezelfde indicatoren als in fase 1, zodat effecten van de PoC objectief vergeleken kunnen worden met de nulmeting. Aanvullend worden ervaringen van stakeholders verzameld via korte surveys/interviews om waargenomen meerwaarde, beperkingen en adoptie-aspecten te identificeren.​\\
+
+\textbf{Deliverable}: nametingsrapport (kwantitatieve vergelijking) en kwalitatieve evaluatie met barrières/succesfactoren en aanbevelingen voor verdere uitrol.​\\
+
+\subsection{Fase 4: Analyse, rapportage en aanbevelingen}
+
+In de laatste fase worden alle resultaten geïntegreerd en geïnterpreteerd. Kwantitatieve resultaten (bv. analysetijd, traceerbaarheid) worden vergeleken tussen voor- en nameting, terwijl kwalitatieve data thematisch geanalyseerd wordt om patronen en verklaringen te formuleren. De uitkomst is een onderbouwd antwoord op de onderzoeksvraag en concrete aanbevelingen voor VLAIO rond verdere implementatie van lineage met OpenMetadata.​\\
+
+\textbf{Deliverable}: bachelorproefscriptie met conclusies en aanbevelingen.\\
+
 
