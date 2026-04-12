@@ -12,7 +12,7 @@ In moderne organisaties worden beslissingen steeds vaker genomen op basis van gr
 
 Bij VLAIO worden impactanalyses opgesteld op basis van data die afkomstig is uit verschillende operationele systemen, databronnen en verwerkingspijplijnen. Ondanks deze rijke data‑omgeving is er vandaag geen volledig transparant en geïntegreerd lineage‑systeem beschikbaar waarmee data‑engineers en businessanalisten eenvoudig kunnen nagaan welke stappen gegevens doorlopen tussen bron en rapport. Daardoor is het voor betrokken stakeholders vaak onduidelijk welke databronnen aan de basis liggen van een bepaald cijfer, welke transformaties of business rules zijn toegepast en welke rapporten of dashboards geraakt worden door een wijziging. Dit leidt tot trage en arbeidsintensieve impactanalyses, een verhoogd risico op fouten in rapportering en een verminderde verklaarbaarheid van de resultaten naar beleidsmakers toe.
 
-De doelgroep van dit onderzoek bestaat in eerste instantie uit de data‑engineers, analisten en rapportbouwers binnen VLAIO die verantwoordelijk zijn voor het ontwikkelen en onderhouden van data‑pijplijnen en impactanalyses. Daarnaast zijn ook beleidsmedewerkers en andere besluitvormers indirect gebaat bij meer transparantie, omdat dit de betrouwbaarheid en reproduceerbaarheid van de analyses waarop zij steunen, verhoogt.
+De doelgroep van dit onderzoek bestaat in eerste instantie uit de data‑engineers, analisten en rapportbouwers binnen VLAIO die verantwoordelijk zijn voor het ontwikkelen en onderhouden van data‑pijplijnen en impactanalyses. Daarnaast ervaren ook beleidsmedewerkers en andere besluitvormers indirect voordelen bij meer transparantie, omdat dit de betrouwbaarheid en reproduceerbaarheid van de analyses waarop zij steunen, verhoogt.
 
 \section{\IfLanguageName{dutch}{Onderzoeksvraag}{Research question}}%
 \label{sec:onderzoeksvraag}
@@ -38,7 +38,7 @@ Om deze vraag concreet te kunnen beantwoorden, wordt ze opgesplitst in een aanta
     \setcounter{enumi}{2}
     \item Wat zijn de kernfunctionaliteiten van data‑catalogus‑ en metadata‑managementtools zoals OpenMetadata voor het beheren van data lineage via API‑integraties en connectors?
     \item Hoe volledig en nauwkeurig kan de lineage in OpenMetadata worden weergegeven voor representatieve impactanalyses bij VLAIO?
-    \item In welke mate verbetert OpenMetadata de analysetijd, traceerbaarheid en duidelijkheid van impactanalyse‑rapporten voor verschillende stakeholders bij VLAIO?
+    \item Hoe wordt de meerwaarde van OpenMetadata-lineage ervaren door betrokken data-engineers, analisten en rapportgebruikers bij impactanalyses?
     \item Welke praktische barrières en aanbevelingen komen naar voren voor een eventuele verdere implementatie van OpenMetadata binnen VLAIO?
 \end{enumerate}
 
@@ -47,19 +47,30 @@ De eerste en derde deelvraag worden hoofdzakelijk beantwoord op basis van litera
 \section{\IfLanguageName{dutch}{Onderzoeksdoelstelling}{Research objective}}%
 \label{sec:onderzoeksdoelstelling}
 
-Het doel van deze bachelorproef is om een kwalitatief en kwantitatief onderbouwde evaluatie te geven van de mate waarin OpenMetadata de transparantie en herleidbaarheid van impactanalyses bij VLAIO kan verbeteren. Concreet wordt een proof‑of‑concept van OpenMetadata opgezet rond een aantal representatieve impactanalyse‑rapporten. Voor deze cases worden eerst nulmetingen uitgevoerd op basis van drie procesindicatoren: (1) traceerbaarheid van de dataflow van bron tot rapport, (2) analysetijd voor het bepalen van de impact van een gesimuleerde wijziging en (3) duidelijkheid van de dataherkomst voor betrokken stakeholders. Na de implementatie van OpenMetadata worden dezelfde indicatoren opnieuw gemeten, zodat voor‑ en nametingen kunnen worden vergeleken.
+Het doel van deze bachelorproef is om via een praktijkgerichte case study de meerwaarde van OpenMetadata-lineage voor impactanalyses bij VLAIO systematisch in kaart te brengen. Concreet wordt een proof-of-concept opgezet voor representatieve impactanalyse-cases, waarbij de opgebouwde lineage wordt geëvalueerd op bruikbaarheid, duidelijkheid en praktische meerwaarde door de betrokken stakeholders zelf.\\
 
-De beoogde resultaten zijn enerzijds een objectief beeld van de meerwaarde van OpenMetadata voor het impactanalyseproces bij VLAIO, en anderzijds concrete aanbevelingen over hoe data‑engineers en analisten lineage structureel kunnen integreren in hun werkwijze.
+De evaluatie gebeurt via gestructureerde gebruikersfeedback (bijvoorbeeld via vragenlijsten in Microsoft Forms), aangevuld met observaties van het gebruik en analyse van de lineage-visualisaties in realistische impactanalysesituaties. De beoogde resultaten zijn enerzijds een onderbouwd inzicht in hoe OpenMetadata de transparantie en herleidbaarheid van impactanalyses kan ondersteunen, en anderzijds concrete aanbevelingen over hoe data-engineers en analisten lineage structureel kunnen integreren in hun werkwijze binnen de VLAIO-context.
 
 \section{\IfLanguageName{dutch}{Opzet van deze bachelorproef}{Structure of this bachelor thesis}}%
 \label{sec:opzet-bachelorproef}
 
-De rest van deze bachelorproef is als volgt opgebouwd:
+De rest van deze bachelorproef is als volgt opgebouwd:\\
 
-In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken rond data lineage, metadata‑management en impactanalyses, met bijzondere aandacht voor tools als OpenMetadata en voor bestaande praktijkervaringen.
+In Hoofdstuk~\ref{ch:stand-van-zaken} wordt een overzicht gegeven van de stand van zaken binnen het onderzoeksdomein, op basis van een literatuurstudie.\\
 
-In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht. Daarbij wordt beschreven hoe de case‑study bij VLAIO is opgezet, hoe de nulmeting en nameting worden uitgevoerd en welke meetinstrumenten worden gebruikt voor traceerbaarheid, analysetijd en duidelijkheid.
 
-In het daaropvolgende hoofdstuk (zie Hoofdstuk~\ref{ch:resultaten}) worden de resultaten van de proof‑of‑concept en de metingen bij VLAIO gepresenteerd en geïnterpreteerd in functie van de onderzoeksvragen.
+In Hoofdstuk~\ref{ch:methodologie} wordt de methodologie toegelicht en worden de gebruikte onderzoekstechnieken besproken om een antwoord te kunnen formuleren op de onderzoeksvragen.\\
 
-In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt een synthese gemaakt van de belangrijkste bevindingen en wordt een antwoord geformuleerd op de centrale onderzoeksvraag en deelvragen. Daarnaast worden beperkingen van het onderzoek besproken en worden voorstellen gedaan voor toekomstig werk binnen dit domein.
+
+% TODO: Vul hier aan voor je eigen hoofstukken, één of twee zinnen per hoofdstuk
+
+In Hoofdstuk~\ref{ch:analyse-context} wordt de praktijkcontext bij VLAIO geanalyseerd en worden representatieve impactanalyse-cases afgebakend.\\
+
+
+In Hoofdstuk~\ref{ch:poc-implementatie} wordt de proof-of-concept in OpenMetadata ontworpen, geïmplementeerd en technisch gedocumenteerd.\\
+
+
+In Hoofdstuk~\ref{ch:poc-evaluatie} wordt de meerwaarde van de PoC geëvalueerd via gestructureerde gebruikersfeedback en kwalitatieve analyse.\\
+
+
+In Hoofdstuk~\ref{ch:conclusie}, tenslotte, wordt de conclusie gegeven en een antwoord geformuleerd op de onderzoeksvragen. Daarbij wordt ook een aanzet gegeven voor toekomstig onderzoek binnen dit domein.\\
