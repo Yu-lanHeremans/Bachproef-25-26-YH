@@ -1,6 +1,8 @@
 \chapter{Analyse van de context}
 \label{ch:contextanalyse}
 
+Dit hoofdstuk beschrijft de organisatorische en technische context waarbinnen impactanalyses bij VLAIO plaatsvinden. Eerst wordt de data-architectuur geschetst, gevolgd door de huidige mogelijkheden en beperkingen van lineage binnen Databricks en Unity Catalog. Daarna wordt toegelicht hoe impactanalyses vandaag verlopen, welke knelpunten daarbij optreden en waarom OpenMetadata als mogelijke oplossing wordt onderzocht. Dit hoofdstuk vormt daarmee de brug tussen het theoretisch kader uit de literatuurstudie en de proof-of-concept die in het volgende hoofdstuk wordt uitgewerkt.
+
 \section{Datalakehouse en medallion-architectuur bij VLAIO}
 
 De data-omgeving van VLAIO is opgebouwd als een grootschalig data lakehouse op Databricks, waarbij data-opslag, verwerking en analyse geconsolideerd worden in één platform. In tegenstelling tot klassieke datawarehouses, waar data vaak in sterk gescheiden silo's wordt beheerd, combineert een lakehouse de flexibiliteit van een data lake met de betrouwbaarheid en governance-mogelijkheden van een warehouse. Binnen VLAIO betekent dit concreet dat uiteenlopende bronsystemen hun data aanleveren aan Databricks, waar deze vervolgens via verschillende lagen worden verwerkt tot rapporteerbare datasets.\\
