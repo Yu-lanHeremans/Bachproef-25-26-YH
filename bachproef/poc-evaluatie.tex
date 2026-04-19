@@ -1,2 +1,38 @@
 \chapter{Evaluatie proof-of-concept}
 \label{ch:poc-evaluatie}
+
+\section{Doel en onderzoeksvragen}
+
+In dit hoofdstuk wordt de proof-of-concept uit Hoofdstuk~\ref{ch:poc-implementatie} geëvalueerd vanuit het perspectief van eindgebruikers en rapportbouwers bij VLAIO. De centrale vraag is in welke mate een expliciet overzicht van dataherkomst en afhankelijkheden, zoals gerealiseerd met OpenMetadata, bijdraagt aan het correct begrijpen en met vertrouwen gebruiken van rapporten.
+
+Meer concreet zijn de onderzoeksvragen als volgt geformuleerd:
+\begin{itemize}
+  \item In welke mate ervaren gebruikers vandaag inzicht in de herkomst van cijfers in rapporten, en hoe gaan zij om met wijzigingen of onduidelijkheden in data?
+  \item In welke mate helpt een visueel overzicht van de dataherkomst (lineage) om wijzigingen en hun impact beter te begrijpen?
+  \item Verschilt de ervaren meerwaarde van zo'n overzicht tussen verschillende gebruikersprofielen, zoals rapportgebruikers, rapportbouwers en technische data-profielen?
+\end{itemize}
+
+Om deze vragen te beantwoorden werd een online vragenlijst afgenomen bij een selectie van rapportgebruikers en technische profielen binnen VLAIO. De vragenlijst combineert enerzijds stellingen over de huidige ervaring zonder extra insight in dataherkomst, en anderzijds een scenario waarin een concreet herkomstoverzicht getoond wordt op basis van de gerealiseerde proof-of-concept.
+
+\section{Onderzoeksopzet}
+
+\subsection{Vragenlijst ``Begrijpbaarheid en vertrouwen in rapporten''}
+
+De evaluatie maakt gebruik van de vragenlijst \emph{``Begrijpbaarheid en vertrouwen in rapporten''}, opgesteld in Microsoft Forms. De vragenlijst kadert expliciet in deze bachelorproef en licht toe dat de bedoeling is om beter te begrijpen hoe gebruikers rapporten interpreteren en omgaan met wijzigingen of onduidelijkheden in cijfers, en in welke mate extra inzicht in dataherkomst daarbij kan helpen.\footnote{Zie de volledige formuliertekst in Bijlage~\ref{app:vragenlijst-begrijpbaarheid-vertrouwen}.} De bevraging is anoniem, duurt naar schatting vijf tot tien minuten en richt zich op medewerkers die in meer of mindere mate met rapporten (zoals Power BI) werken.
+
+De vragenlijst is thematisch opgebouwd uit vijf blokken:
+\begin{enumerate}
+  \item \textbf{Profielvragen}: rol (rapportgebruiker, occasionele rapportbouwer, technisch dataprofiel), frequentie van rapportgebruik en zelfgerapporteerde vertrouwdheid met de onderliggende data.
+  \item \textbf{Huidige ervaring zonder extra inzicht}: Likert-schalen (1--5) rond zicht op de herkomst van cijfers, het kunnen verklaren van wijzigingen en het inschatten van impact op andere rapporten, aangevuld met een open vraag naar een concrete situatie waarin men twijfelde aan de cijfers of hun herkomst.
+  \item \textbf{Scenario met herkomstoverzicht}: introductie van een vereenvoudigde visualisatie van de lineageketen (van databronnen en tussenliggende tabellen tot een rapport), gevolgd door stellingen over begrijpelijkheid, bruikbaarheid en impact op vertrouwen, opnieuw op een vijfpuntsschaal.
+  \item \textbf{Extra vragen voor technische profielen}: bijkomende stellingen voor rapportbouwers en technische dataprofielen over de rol van zo'n overzicht bij impactanalyses en het onderbouwen van wijzigingen.
+  \item \textbf{Algemene evaluatie}: algemene stellingen over de meerwaarde en het verwachte gebruik van een herkomstoverzicht, plus een optionele open vraag voor extra opmerkingen of suggesties.
+\end{enumerate}
+
+De meeste gesloten vragen maken gebruik van een vijfpuntsschaal van ``helemaal oneens'' tot ``helemaal eens''. Dit laat toe om zowel een beschrijvend beeld te schetsen van de huidige situatie als om de ervaren meerwaarde van het herkomstoverzicht kwantitatief te vergelijken. De open vragen bieden ruimte voor nuance en concrete voorbeelden, die gebruikt worden om de kwantitatieve resultaten te duiden en te illustreren.
+
+\subsection{Scenario en visualisatie van dataherkomst}
+
+In het derde blok van de vragenlijst wordt de proof-of-concept expliciet in beeld gebracht via een vereenvoudigde visualisatie van de lineageketen. De respondenten krijgen een schematische weergave te zien waarin links de databronnen en tussenliggende datastappen staan, en rechts het rapport dat met deze data gevoed wordt. De verbindingen tonen welke datasets doorstromen naar het rapport, gebaseerd op de in OpenMetadata vastgelegde relaties.
+
+De introductietekst bij deze visual legt uit dat het overzicht automatisch wordt opgebouwd op basis van metadata, en dat het toelaat om bij een wijziging in één van de datasets na te gaan welke rapporten en cijfers hierdoor geraakt kunnen worden. Op die manier wordt de proof-of-concept vertaald naar een herkenbare gebruikssituatie, waarin respondenten kunnen aangeven in welke mate zo'n overzicht hen zou helpen om wijzigingen en hun impact beter te begrijpen.
