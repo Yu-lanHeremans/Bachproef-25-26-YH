@@ -18,10 +18,10 @@
 
 %% For source code highlighting, requires pygments to be installed
 %% Compile with the -shell-escape flag!
-%% \usepackage[chapter]{minted}
+\usepackage[chapter]{minted}
 %% If you compile with the make_thesis.{bat,sh} script, use the following
 %% import instead:
-\usepackage[chapter,outputdir=../output]{minted}
+%%\usepackage[chapter,outputdir=../output]{minted}
 \usemintedstyle{solarized-light}
 
 %% Formatting for minted environments.
@@ -46,7 +46,25 @@
 }
 
 % Other packages not already included can be imported here
+\usepackage{caption}
+\usepackage{underscore}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{minted}
+\usepackage{tabularx}
+\usepackage{array}
 
+
+\lstdefinelanguage{yaml}{
+	keywords={true,false,null,y,n},
+	keywordstyle=\color{darkgray}\bfseries,
+	basicstyle=\ttfamily\footnotesize\color{blue},
+	comment=[l]{\#},
+	morecomment=[l]{:},
+	commentstyle=\color{black},
+	stringstyle=\color{blue},
+	moredelim=[l][\color{black}]{\-},
+}
 %%---------- Document metadata -------------------------------------------------
 % TODO: Replace this with your own information
 \author{Yu-lan Heremans}

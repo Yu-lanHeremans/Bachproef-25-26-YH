@@ -1,0 +1,122 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+    \PYG{c+c1}{\PYGZsh{} Bepaal hoe bestaande dashboards gedetecteerd worden:}
+    \PYG{c+c1}{\PYGZsh{} False = controle op basis van RapportID}
+    \PYG{c+c1}{\PYGZsh{} True  = controle op basis van WebUrl}
+    \PYG{n}{CREATE\PYGZus{}IF\PYGZus{}WEB\PYGZus{}URL\PYGZus{}NOT\PYGZus{}EXISTS} \PYG{o}{=} \PYG{k+kc}{False}
+
+
+	\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{to\PYGZus{}plain\PYGZus{}str}\PYG{p}{(}\PYG{n}{value}\PYG{p}{)} \PYG{o}{\PYGZhy{}\PYGZgt{}} \PYG{n+nb}{str}\PYG{p}{:}
+\PYG{+w}{	}\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}Zet SDK\PYGZhy{}objecten of wrappers om naar een gewone string.\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+	\PYG{k}{return} \PYG{n+nb}{str}\PYG{p}{(}\PYG{n+nb}{getattr}\PYG{p}{(}\PYG{n}{value}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}root\PYGZdq{}}\PYG{p}{,} \PYG{n}{value}\PYG{p}{)} \PYG{o+ow}{or} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}\PYG{p}{)}
+
+
+	\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{normalize\PYGZus{}url}\PYG{p}{(}\PYG{n}{url}\PYG{p}{:} \PYG{n+nb}{str}\PYG{p}{)} \PYG{o}{\PYGZhy{}\PYGZgt{}} \PYG{n+nb}{str}\PYG{p}{:}
+\PYG{+w}{	}\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}Normaliseer een URL voor robuuste vergelijking.\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+	\PYG{k}{return} \PYG{p}{(}\PYG{n}{url} \PYG{o+ow}{or} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}\PYG{p}{)}\PYG{o}{.}\PYG{n}{strip}\PYG{p}{()}\PYG{o}{.}\PYG{n}{rstrip}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}/\PYGZdq{}}\PYG{p}{)}\PYG{o}{.}\PYG{n}{lower}\PYG{p}{()}
+
+
+	\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{extract\PYGZus{}report\PYGZus{}id}\PYG{p}{(}\PYG{n}{url}\PYG{p}{:} \PYG{n+nb}{str}\PYG{p}{)} \PYG{o}{\PYGZhy{}\PYGZgt{}} \PYG{n+nb}{str}\PYG{p}{:}
+\PYG{+w}{	}\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}Extraheer, indien aanwezig, het rapport\PYGZhy{}ID uit een Power BI\PYGZhy{}URL.\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+	\PYG{n}{match} \PYG{o}{=} \PYG{n}{re}\PYG{o}{.}\PYG{n}{search}\PYG{p}{(}\PYG{l+s+sa}{r}\PYG{l+s+s2}{\PYGZdq{}reports/([0\PYGZhy{}9a\PYGZhy{}fA\PYGZhy{}F\PYGZhy{}]}\PYG{l+s+si}{\PYGZob{}36\PYGZcb{}}\PYG{l+s+s2}{)\PYGZdq{}}\PYG{p}{,} \PYG{n}{url} \PYG{o+ow}{or} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}\PYG{p}{)}
+	\PYG{k}{return} \PYG{n}{match}\PYG{o}{.}\PYG{n}{group}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{o}{.}\PYG{n}{lower}\PYG{p}{()} \PYG{k}{if} \PYG{n}{match} \PYG{k}{else} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}
+
+
+	\PYG{c+c1}{\PYGZsh{} Indexeer bestaande dashboards om duplicaten te vermijden.}
+	\PYG{n}{existing\PYGZus{}by\PYGZus{}url} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+	\PYG{n}{existing\PYGZus{}by\PYGZus{}report\PYGZus{}id} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+
+	\PYG{k}{for} \PYG{n}{dashboard} \PYG{o+ow}{in} \PYG{n}{Dashboards}\PYG{o}{.}\PYG{n}{list\PYGZus{}all}\PYG{p}{():}
+	\PYG{n}{dashboard\PYGZus{}url} \PYG{o}{=} \PYG{n}{normalize\PYGZus{}url}\PYG{p}{(}\PYG{n}{to\PYGZus{}plain\PYGZus{}str}\PYG{p}{(}\PYG{n+nb}{getattr}\PYG{p}{(}\PYG{n}{dashboard}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}sourceUrl\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}\PYGZdq{}}\PYG{p}{)))}
+	\PYG{n}{dashboard\PYGZus{}report\PYGZus{}id} \PYG{o}{=} \PYG{n}{extract\PYGZus{}report\PYGZus{}id}\PYG{p}{(}\PYG{n}{dashboard\PYGZus{}url}\PYG{p}{)}
+
+	\PYG{k}{if} \PYG{n}{dashboard\PYGZus{}url} \PYG{o+ow}{and} \PYG{n}{dashboard\PYGZus{}url} \PYG{o+ow}{not} \PYG{o+ow}{in} \PYG{n}{existing\PYGZus{}by\PYGZus{}url}\PYG{p}{:}
+	\PYG{n}{existing\PYGZus{}by\PYGZus{}url}\PYG{p}{[}\PYG{n}{dashboard\PYGZus{}url}\PYG{p}{]} \PYG{o}{=} \PYG{n}{dashboard}
+
+	\PYG{k}{if} \PYG{n}{dashboard\PYGZus{}report\PYGZus{}id} \PYG{o+ow}{and} \PYG{n}{dashboard\PYGZus{}report\PYGZus{}id} \PYG{o+ow}{not} \PYG{o+ow}{in} \PYG{n}{existing\PYGZus{}by\PYGZus{}report\PYGZus{}id}\PYG{p}{:}
+	\PYG{n}{existing\PYGZus{}by\PYGZus{}report\PYGZus{}id}\PYG{p}{[}\PYG{n}{dashboard\PYGZus{}report\PYGZus{}id}\PYG{p}{]} \PYG{o}{=} \PYG{n}{dashboard}
+
+
+	\PYG{n}{dashboard\PYGZus{}results} \PYG{o}{=} \PYG{p}{[]}
+	\PYG{n}{created\PYGZus{}by\PYGZus{}url} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+	\PYG{n}{created\PYGZus{}by\PYGZus{}report\PYGZus{}id} \PYG{o}{=} \PYG{p}{\PYGZob{}\PYGZcb{}}
+
+	\PYG{c+c1}{\PYGZsh{} Doorloop alle rapporten uit de CSV.}
+	\PYG{k}{for} \PYG{n}{\PYGZus{}}\PYG{p}{,} \PYG{n}{row} \PYG{o+ow}{in} \PYG{n}{df}\PYG{o}{.}\PYG{n}{iterrows}\PYG{p}{():}
+	\PYG{n}{rapport\PYGZus{}naam} \PYG{o}{=} \PYG{n+nb}{str}\PYG{p}{(}\PYG{n}{row}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}RapportNaam\PYGZdq{}}\PYG{p}{])}\PYG{o}{.}\PYG{n}{strip}\PYG{p}{()}
+	\PYG{n}{web\PYGZus{}url} \PYG{o}{=} \PYG{n+nb}{str}\PYG{p}{(}\PYG{n}{row}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}WebUrl\PYGZdq{}}\PYG{p}{])}\PYG{o}{.}\PYG{n}{strip}\PYG{p}{()}
+	\PYG{n}{dataset\PYGZus{}naam} \PYG{o}{=} \PYG{n+nb}{str}\PYG{p}{(}\PYG{n}{row}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}DatasetNaam\PYGZdq{}}\PYG{p}{])}\PYG{o}{.}\PYG{n}{strip}\PYG{p}{()}
+	\PYG{n}{rapport\PYGZus{}id} \PYG{o}{=} \PYG{n+nb}{str}\PYG{p}{(}\PYG{n}{row}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}RapportID\PYGZdq{}}\PYG{p}{])}\PYG{o}{.}\PYG{n}{strip}\PYG{p}{()}
+	\PYG{n}{dataset\PYGZus{}id} \PYG{o}{=} \PYG{n+nb}{str}\PYG{p}{(}\PYG{n}{row}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}DatasetID\PYGZdq{}}\PYG{p}{])}\PYG{o}{.}\PYG{n}{strip}\PYG{p}{()}
+
+	\PYG{c+c1}{\PYGZsh{} Zoek de gekoppelde bron\PYGZhy{}tabellen op via de YAML\PYGZhy{}resolver.}
+	\PYG{n}{source\PYGZus{}fqns} \PYG{o}{=} \PYG{n}{resolve\PYGZus{}source\PYGZus{}table\PYGZus{}fqns}\PYG{p}{(}\PYG{n}{dataset\PYGZus{}naam}\PYG{p}{)}
+
+	\PYG{n}{normalized\PYGZus{}url} \PYG{o}{=} \PYG{n}{normalize\PYGZus{}url}\PYG{p}{(}\PYG{n}{web\PYGZus{}url}\PYG{p}{)}
+	\PYG{n}{normalized\PYGZus{}report\PYGZus{}id} \PYG{o}{=} \PYG{n}{rapport\PYGZus{}id}\PYG{o}{.}\PYG{n}{lower}\PYG{p}{()}
+
+	\PYG{n}{existing\PYGZus{}dashboard} \PYG{o}{=} \PYG{k+kc}{None}
+
+	\PYG{c+c1}{\PYGZsh{} Kies de gewenste controlelogica voor reeds bestaande dashboards.}
+	\PYG{k}{if} \PYG{n}{CREATE\PYGZus{}IF\PYGZus{}WEB\PYGZus{}URL\PYGZus{}NOT\PYGZus{}EXISTS}\PYG{p}{:}
+	\PYG{n}{existing\PYGZus{}dashboard} \PYG{o}{=} \PYG{p}{(}
+	\PYG{n}{created\PYGZus{}by\PYGZus{}url}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n}{normalized\PYGZus{}url}\PYG{p}{)}
+	\PYG{o+ow}{or} \PYG{n}{existing\PYGZus{}by\PYGZus{}url}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n}{normalized\PYGZus{}url}\PYG{p}{)}
+	\PYG{p}{)}
+	\PYG{n}{check\PYGZus{}mode} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}WebUrl\PYGZdq{}}
+	\PYG{k}{else}\PYG{p}{:}
+	\PYG{n}{existing\PYGZus{}dashboard} \PYG{o}{=} \PYG{p}{(}
+	\PYG{n}{created\PYGZus{}by\PYGZus{}report\PYGZus{}id}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n}{normalized\PYGZus{}report\PYGZus{}id}\PYG{p}{)}
+	\PYG{o+ow}{or} \PYG{n}{existing\PYGZus{}by\PYGZus{}report\PYGZus{}id}\PYG{o}{.}\PYG{n}{get}\PYG{p}{(}\PYG{n}{normalized\PYGZus{}report\PYGZus{}id}\PYG{p}{)}
+	\PYG{p}{)}
+	\PYG{n}{check\PYGZus{}mode} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}RapportID\PYGZdq{}}
+
+	\PYG{c+c1}{\PYGZsh{} Gebruik een bestaand dashboard wanneer dat al aanwezig is.}
+	\PYG{k}{if} \PYG{n}{existing\PYGZus{}dashboard} \PYG{o+ow}{is} \PYG{o+ow}{not} \PYG{k+kc}{None}\PYG{p}{:}
+	\PYG{n}{dashboard\PYGZus{}id} \PYG{o}{=} \PYG{n}{existing\PYGZus{}dashboard}\PYG{o}{.}\PYG{n}{id}
+	\PYG{n}{dashboard\PYGZus{}fqn} \PYG{o}{=} \PYG{n}{to\PYGZus{}plain\PYGZus{}str}\PYG{p}{(}\PYG{n}{existing\PYGZus{}dashboard}\PYG{o}{.}\PYG{n}{fullyQualifiedName}\PYG{p}{)}
+	\PYG{n}{dashboard\PYGZus{}status} \PYG{o}{=} \PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}existing (}\PYG{l+s+si}{\PYGZob{}}\PYG{n}{check\PYGZus{}mode}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{ al aanwezig)\PYGZdq{}}
+	\PYG{k}{else}\PYG{p}{:}
+	\PYG{c+c1}{\PYGZsh{} Maak anders een nieuw dashboard aan in OpenMetadata.}
+	\PYG{n}{request} \PYG{o}{=} \PYG{n}{CreateDashboardRequest}\PYG{p}{(}
+	\PYG{n}{name}\PYG{o}{=}\PYG{n}{rapport\PYGZus{}naam}\PYG{p}{,}
+	\PYG{n}{displayName}\PYG{o}{=}\PYG{n}{rapport\PYGZus{}naam}\PYG{p}{,}
+	\PYG{n}{service}\PYG{o}{=}\PYG{n}{DASHBOARD\PYGZus{}SERVICE}\PYG{p}{,}
+	\PYG{n}{description}\PYG{o}{=}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}Dashboard aangemaakt vanuit CSV voor dataset }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{dataset\PYGZus{}naam}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{.\PYGZdq{}}\PYG{p}{,}
+	\PYG{n}{sourceUrl}\PYG{o}{=}\PYG{n}{web\PYGZus{}url}\PYG{p}{,}
+	\PYG{p}{)}
+
+	\PYG{k}{try}\PYG{p}{:}
+	\PYG{n}{dashboard} \PYG{o}{=} \PYG{n}{Dashboards}\PYG{o}{.}\PYG{n}{create}\PYG{p}{(}\PYG{n}{request}\PYG{p}{)}
+	\PYG{n}{dashboard\PYGZus{}id} \PYG{o}{=} \PYG{n}{dashboard}\PYG{o}{.}\PYG{n}{id}
+	\PYG{n}{dashboard\PYGZus{}fqn} \PYG{o}{=} \PYG{n}{to\PYGZus{}plain\PYGZus{}str}\PYG{p}{(}\PYG{n}{dashboard}\PYG{o}{.}\PYG{n}{fullyQualifiedName}\PYG{p}{)}
+	\PYG{n}{dashboard\PYGZus{}status} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}created\PYGZdq{}}
+
+	\PYG{n}{created\PYGZus{}by\PYGZus{}url}\PYG{p}{[}\PYG{n}{normalized\PYGZus{}url}\PYG{p}{]} \PYG{o}{=} \PYG{n}{dashboard}
+	\PYG{k}{if} \PYG{n}{normalized\PYGZus{}report\PYGZus{}id}\PYG{p}{:}
+	\PYG{n}{created\PYGZus{}by\PYGZus{}report\PYGZus{}id}\PYG{p}{[}\PYG{n}{normalized\PYGZus{}report\PYGZus{}id}\PYG{p}{]} \PYG{o}{=} \PYG{n}{dashboard}
+	\PYG{k}{except} \PYG{n+ne}{Exception} \PYG{k}{as} \PYG{n}{exc}\PYG{p}{:}
+	\PYG{n}{dashboard\PYGZus{}id} \PYG{o}{=} \PYG{k+kc}{None}
+	\PYG{n}{dashboard\PYGZus{}fqn} \PYG{o}{=} \PYG{k+kc}{None}
+	\PYG{n}{dashboard\PYGZus{}status} \PYG{o}{=} \PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}error: }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{exc}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}
+
+	\PYG{n}{dashboard\PYGZus{}results}\PYG{o}{.}\PYG{n}{append}\PYG{p}{(}
+	\PYG{p}{\PYGZob{}}
+		\PYG{l+s+s2}{\PYGZdq{}RapportNaam\PYGZdq{}}\PYG{p}{:} \PYG{n}{rapport\PYGZus{}naam}\PYG{p}{,}
+		\PYG{l+s+s2}{\PYGZdq{}WebUrl\PYGZdq{}}\PYG{p}{:} \PYG{n}{web\PYGZus{}url}\PYG{p}{,}
+		\PYG{l+s+s2}{\PYGZdq{}DatasetNaam\PYGZdq{}}\PYG{p}{:} \PYG{n}{dataset\PYGZus{}naam}\PYG{p}{,}
+		\PYG{l+s+s2}{\PYGZdq{}RapportID\PYGZdq{}}\PYG{p}{:} \PYG{n}{rapport\PYGZus{}id}\PYG{p}{,}
+		\PYG{l+s+s2}{\PYGZdq{}DatasetID\PYGZdq{}}\PYG{p}{:} \PYG{n}{dataset\PYGZus{}id}\PYG{p}{,}
+		\PYG{l+s+s2}{\PYGZdq{}mapped\PYGZus{}source\PYGZus{}fqns\PYGZdq{}}\PYG{p}{:} \PYG{n}{source\PYGZus{}fqns}\PYG{p}{,}
+		\PYG{l+s+s2}{\PYGZdq{}dashboard\PYGZus{}status\PYGZdq{}}\PYG{p}{:} \PYG{n}{dashboard\PYGZus{}status}\PYG{p}{,}
+		\PYG{l+s+s2}{\PYGZdq{}dashboard\PYGZus{}fqn\PYGZdq{}}\PYG{p}{:} \PYG{n}{dashboard\PYGZus{}fqn}\PYG{p}{,}
+		\PYG{l+s+s2}{\PYGZdq{}dashboard\PYGZus{}id\PYGZdq{}}\PYG{p}{:} \PYG{n}{dashboard\PYGZus{}id}\PYG{p}{,}
+	\PYG{p}{\PYGZcb{}}
+	\PYG{p}{)}
+
+	\PYG{n}{dashboards\PYGZus{}df} \PYG{o}{=} \PYG{n}{pd}\PYG{o}{.}\PYG{n}{DataFrame}\PYG{p}{(}\PYG{n}{dashboard\PYGZus{}results}\PYG{p}{)}
+	\PYG{n}{display}\PYG{p}{(}\PYG{n}{dashboards\PYGZus{}df}\PYG{p}{)}
+
+	\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}Dashboard\PYGZhy{}overzicht:\PYGZdq{}}\PYG{p}{)}
+	\PYG{n+nb}{print}\PYG{p}{(}\PYG{n}{dashboards\PYGZus{}df}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}dashboard\PYGZus{}status\PYGZdq{}}\PYG{p}{]}\PYG{o}{.}\PYG{n}{value\PYGZus{}counts}\PYG{p}{(}\PYG{n}{dropna}\PYG{o}{=}\PYG{k+kc}{False}\PYG{p}{))}
+	\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}CREATE\PYGZus{}IF\PYGZus{}WEB\PYGZus{}URL\PYGZus{}NOT\PYGZus{}EXISTS =\PYGZdq{}}\PYG{p}{,} \PYG{n}{CREATE\PYGZus{}IF\PYGZus{}WEB\PYGZus{}URL\PYGZus{}NOT\PYGZus{}EXISTS}\PYG{p}{)}
+\end{MintedVerbatim}
