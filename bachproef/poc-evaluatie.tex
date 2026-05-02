@@ -7,76 +7,95 @@ In dit hoofdstuk wordt de proof-of-concept uit Hoofdstuk~\ref{ch:poc-implementat
 
 Meer concreet zijn de onderzoeksvragen als volgt geformuleerd:
 \begin{itemize}
-  \item In welke mate ervaren gebruikers vandaag inzicht in de herkomst van cijfers in rapporten, en hoe gaan zij om met wijzigingen of onduidelijkheden in data?
-  \item In welke mate helpt een visueel overzicht van de dataherkomst (lineage) om wijzigingen en hun impact beter te begrijpen?
-  \item Verschilt de ervaren meerwaarde van zo'n overzicht tussen verschillende gebruikersprofielen, zoals rapportgebruikers, rapportbouwers en technische data-profielen?
+	\item In welke mate ervaren gebruikers vandaag inzicht in de herkomst van cijfers in rapporten, en hoe gaan zij om met wijzigingen of onduidelijkheden in data?
+	\item In welke mate helpt een visueel overzicht van de dataherkomst (lineage) om wijzigingen en hun impact beter te begrijpen?
+	\item Verschilt de ervaren meerwaarde van zo'n overzicht tussen verschillende gebruikersprofielen, zoals rapportgebruikers, rapportbouwers en technische dataprofielen?
 \end{itemize}
 
-Om deze vragen te beantwoorden werd een online vragenlijst afgenomen bij een selectie van rapportgebruikers en technische profielen binnen VLAIO. De vragenlijst combineert enerzijds stellingen over de huidige ervaring zonder extra insight in dataherkomst, en anderzijds een scenario waarin een concreet herkomstoverzicht getoond wordt op basis van de gerealiseerde proof-of-concept.
+Om deze vragen te beantwoorden werd een online vragenlijst afgenomen bij een selectie van rapportgebruikers, rapportbouwers en technische profielen binnen VLAIO. De vragenlijst combineert enerzijds stellingen over de huidige ervaring zonder extra inzicht in dataherkomst, en anderzijds een scenario waarin een concreet herkomstoverzicht getoond wordt op basis van de gerealiseerde proof-of-concept.
 
 \section{Onderzoeksopzet}
 
 \subsection{Vragenlijst ``Begrijpbaarheid en vertrouwen in rapporten''}
 
-De evaluatie maakt gebruik van de vragenlijst \emph{``Begrijpbaarheid en vertrouwen in rapporten''}, opgesteld in Microsoft Forms. De vragenlijst kadert expliciet in deze bachelorproef en licht toe dat de bedoeling is om beter te begrijpen hoe gebruikers rapporten interpreteren en omgaan met wijzigingen of onduidelijkheden in cijfers, en in welke mate extra inzicht in dataherkomst daarbij kan helpen.\footnote{Zie de volledige formuliertekst in Bijlage~\ref{app:vragenlijst-begrijpbaarheid-vertrouwen}.} De bevraging is anoniem, duurt naar schatting vijf tot tien minuten en richt zich op medewerkers die in meer of mindere mate met rapporten (zoals Power BI) werken.
+De evaluatie maakt gebruik van de vragenlijst \emph{``Begrijpbaarheid en vertrouwen in rapporten''}, opgesteld in Microsoft Forms. De vragenlijst kadert expliciet in deze bachelorproef en licht toe dat de bedoeling is om beter te begrijpen hoe gebruikers rapporten interpreteren en omgaan met wijzigingen of onduidelijkheden in cijfers, en in welke mate extra inzicht in dataherkomst daarbij kan helpen.\footnote{Zie de volledige formuliertekst in Bijlage~\ref{app:vragenlijst-begrijpbaarheid-vertrouwen}.} De bevraging is anoniem, duurt naar schatting vijf tot tien minuten en richt zich op medewerkers die in meer of mindere mate met rapporten (zoals Power BI) werken.\\
 
 De vragenlijst is thematisch opgebouwd uit vijf blokken:
 \begin{enumerate}
-  \item \textbf{Profielvragen}: rol (rapportgebruiker, occasionele rapportbouwer, technisch dataprofiel), frequentie van rapportgebruik en zelfgerapporteerde vertrouwdheid met de onderliggende data.
-  \item \textbf{Huidige ervaring zonder extra inzicht}: Likert-schalen (1--5) rond zicht op de herkomst van cijfers, het kunnen verklaren van wijzigingen en het inschatten van impact op andere rapporten, aangevuld met een open vraag naar een concrete situatie waarin men twijfelde aan de cijfers of hun herkomst.
-  \item \textbf{Scenario met herkomstoverzicht}: introductie van een vereenvoudigde visualisatie van de lineageketen (van databronnen en tussenliggende tabellen tot een rapport), gevolgd door stellingen over begrijpelijkheid, bruikbaarheid en impact op vertrouwen, opnieuw op een vijfpuntsschaal.
-  \item \textbf{Extra vragen voor technische profielen}: bijkomende stellingen voor rapportbouwers en technische dataprofielen over de rol van zo'n overzicht bij impactanalyses en het onderbouwen van wijzigingen.
-  \item \textbf{Algemene evaluatie}: algemene stellingen over de meerwaarde en het verwachte gebruik van een herkomstoverzicht, plus een optionele open vraag voor extra opmerkingen of suggesties.
+	\item \textbf{Profielvragen}: rol (rapportgebruiker, occasionele rapportbouwer, technisch dataprofiel), frequentie van rapportgebruik en zelfgerapporteerde vertrouwdheid met de onderliggende data.
+	\item \textbf{Huidige ervaring zonder extra inzicht}: Likert-schalen (1--5) rond zicht op de herkomst van cijfers, het kunnen verklaren van wijzigingen en het inschatten van impact op andere rapporten, aangevuld met een open vraag naar een concrete situatie waarin men twijfelde aan de cijfers of hun herkomst.
+	\item \textbf{Scenario met herkomstoverzicht}: introductie van een vereenvoudigde visualisatie van de lineageketen (van databronnen en tussenliggende tabellen tot een rapport), gevolgd door stellingen over begrijpelijkheid, bruikbaarheid en impact op vertrouwen, opnieuw op een vijfpuntsschaal.
+	\item \textbf{Extra vragen voor technische profielen}: bijkomende stellingen voor rapportbouwers en technische dataprofielen over de rol van zo'n overzicht bij impactanalyses en het onderbouwen van wijzigingen.
+	\item \textbf{Algemene evaluatie}: algemene stellingen over de meerwaarde en het verwachte gebruik van een herkomstoverzicht, plus een optionele open vraag voor extra opmerkingen of suggesties.
 \end{enumerate}
 
-De meeste gesloten vragen maken gebruik van een vijfpuntsschaal van ``helemaal oneens'' tot ``helemaal eens''. Dit laat toe om zowel een beschrijvend beeld te schetsen van de huidige situatie als om de ervaren meerwaarde van het herkomstoverzicht kwantitatief te vergelijken. De open vragen bieden ruimte voor nuance en concrete voorbeelden, die gebruikt worden om de kwantitatieve resultaten te duiden en te illustreren.
+De meeste gesloten vragen maken gebruik van een vijfpuntsschaal van ``helemaal oneens'' tot ``helemaal eens''. Dit laat toe om zowel een beschrijvend beeld te schetsen van de huidige situatie als om de ervaren meerwaarde van het herkomstoverzicht kwantitatief te vergelijken. De open vragen bieden ruimte voor nuance en concrete voorbeelden, die gebruikt worden om de kwantitatieve resultaten te duiden en te illustreren.\\
 
 \subsection{Scenario en visualisatie van dataherkomst}
 
-In het derde blok van de vragenlijst wordt de proof-of-concept expliciet in beeld gebracht via een vereenvoudigde visualisatie van de lineageketen. De respondenten krijgen een schematische weergave te zien waarin links de databronnen en tussenliggende datastappen staan, en rechts het rapport dat met deze data gevoed wordt. De verbindingen tonen welke datasets doorstromen naar het rapport, gebaseerd op de in OpenMetadata vastgelegde relaties.\\
+In het derde blok van de vragenlijst wordt de proof-of-concept expliciet in beeld gebracht via een vereenvoudigde visualisatie van de lineageketen. De respondenten krijgen een schematische weergave te zien waarin links de databronnen en tussenliggende datastappen staan, en rechts het rapport dat met deze data gevoed wordt. De verbindingen tonen welke datasets doorstromen naar het rapport, gebaseerd op de in OpenMetadata vastgelegde relaties op tabelniveau.\\
 
-De introductietekst bij deze visual legt uit dat het overzicht automatisch wordt opgebouwd op basis van metadata, en dat het toelaat om bij een wijziging in één van de datasets na te gaan welke rapporten en cijfers hierdoor geraakt kunnen worden. Op die manier wordt de proof-of-concept vertaald naar een herkenbare gebruikssituatie, waarin respondenten kunnen aangeven in welke mate zo'n overzicht hen zou helpen om wijzigingen en hun impact beter te begrijpen.
-
+De introductietekst bij deze visual legt uit dat het overzicht automatisch wordt opgebouwd op basis van metadata, en dat het toelaat om bij een wijziging in één van de datasets na te gaan welke rapporten en cijfers hierdoor geraakt kunnen worden. Op die manier wordt de proof-of-concept vertaald naar een herkenbare gebruikssituatie, waarin respondenten kunnen aangeven in welke mate zo'n overzicht hen zou helpen om wijzigingen en hun impact beter te begrijpen.\\
 \section{Resultaten}
 
 \subsection{Profiel van de respondenten}
 
-Op het moment van analyse hebben tien respondenten de vragenlijst volledig ingevuld. Hoewel deze steekproef beperkt is, biedt ze reeds een eerste indicatie van de ervaren noden en knelpunten bij het gebruik van rapporten binnen VLAIO.\\
+Op het moment van analyse hebben 24 respondenten de vragenlijst volledig ingevuld. Hoewel deze steekproef nog beperkt is, biedt zij een eerste indicatie van de ervaren noden en knelpunten bij het gebruik van rapporten binnen VLAIO.\\
 
-De verdeling van de respondenten over de verschillende profielen is als volgt: een meerderheid bestaat uit gebruikers die occasioneel zelf rapporten bouwen, aangevuld met een kleinere groep puur technische dataprofielen en een beperkt aantal respondenten die voornamelijk rapporten consumeren. Daarnaast geeft het merendeel van de respondenten aan wekelijks of dagelijks met rapporten te werken, en zichzelf minstens in zekere mate vertrouwd te achten met de onderliggende data.\\
+De verdeling van de respondenten over de verschillende profielen laat zien dat de steekproef hoofdzakelijk bestaat uit personen die rapporten bouwen of inhoudelijk met data werken, aangevuld met een kleinere groep respondenten die rapporten vooral consumeren. Daarnaast geven de meeste respondenten aan wekelijks of dagelijks met rapporten te werken, en zichzelf minstens in zekere mate vertrouwd te achten met de onderliggende data.\\
 
-Deze samenstelling impliceert dat de resultaten voornamelijk het perspectief weerspiegelen van gebruikers die actief met data en rapporten werken, eerder dan van volledig niet-technische eindgebruikers.\\
+Deze samenstelling impliceert dat de resultaten vooral het perspectief weerspiegelen van gebruikers die actief met data en rapporten bezig zijn, eerder dan van volledig niet-technische eindgebruikers. Tegelijk maakt de mix van respondenten het mogelijk om verschillen te signaleren tussen gebruikers die vooral rapporten lezen en respondenten die zelf rapporten opstellen of technisch met data werken.\\
 
 \subsection{Huidige ervaring zonder expliciet inzicht in dataherkomst}
 
-De resultaten tonen dat respondenten over het algemeen aangeven een redelijk goed inzicht te hebben in waar cijfers in rapporten vandaan komen. Tegelijk blijkt dat het begrijpen van wijzigingen in rapporten en het inschatten van de impact ervan duidelijk moeilijker blijft.\\
+De antwoorden op de stellingen over de huidige situatie suggereren dat respondenten in deze steekproef doorgaans aangeven een redelijk zicht te hebben op waar de cijfers in de rapporten vandaan komen. Tegelijk blijkt dat het begrijpen van wijzigingen in rapporten en het inschatten van de impact ervan als duidelijk lastiger wordt ervaren.\\
 
-Meer specifiek geven respondenten vaker aan dat ze kunnen achterhalen waarom cijfers veranderen dan dat ze kunnen inschatten welke andere rapporten of onderdelen hierdoor beïnvloed worden. Dit wijst erop dat het zicht op afhankelijkheden en doorwerking van wijzigingen beperkt is.\\
+Meer specifiek geven respondenten vaker aan dat zij meestal kunnen achterhalen waarom cijfers veranderen dan dat zij goed kunnen inschatten welke andere rapporten of onderdelen hierdoor beïnvloed worden. Dit wijst erop dat het zicht op onderlinge afhankelijkheden en de doorwerking van wijzigingen beperkt blijft, ook bij gebruikers die zichzelf relatief vertrouwd achten met de data.\\
 
-De open antwoorden bevestigen dit beeld. Respondenten geven aan dat onzekerheid vaak ontstaat wanneer de betekenis van cijfers niet volledig duidelijk is, of wanneer rapporten door andere teams zijn opgebouwd. Daarbij wordt onder meer verwezen naar onduidelijkheid over definities (bijvoorbeeld het onderscheid tussen toegekende en uitbetaalde waarden), het effect van filters, en het moeilijk kunnen onderscheiden tussen fouten in data en fouten in het rapport zelf.\\
+De open antwoorden bevestigen dit beeld en geven concreet kleur aan deze bevinding. Respondenten geven onder meer aan dat onzekerheid vaak ontstaat wanneer de betekenis van cijfers niet volledig duidelijk is, of wanneer rapporten door andere teams zijn opgebouwd. Daarbij wordt verwezen naar onduidelijkheid over definities, het effect van filters, de interpretatie van geaggregeerde waarden en het onderscheid tussen fouten in data en fouten in de rapportopbouw zelf.\\
 
-Deze bevindingen suggereren dat, zonder expliciet inzicht in dataherkomst en afhankelijkheden, gebruikers moeite hebben om wijzigingen correct te interpreteren en de impact ervan in te schatten.\\
+Een eerste terugkerend patroon is dat gebruikers niet altijd zeker weten wat een cijfer precies vertegenwoordigt. Zo beschrijven respondenten situaties waarin niet duidelijk is of een waarde betrekking heeft op toegekende of finaal uitbetaalde steun, of waarin een wijziging in een rapport zichtbaar is zonder dat meteen duidelijk is of die verandering voortkomt uit de brondata, uit een aangepaste definitie of uit een fout in het rapport. Ook gevallen waarin dezelfde data in verschillende rapporten anders worden geïnterpreteerd, komen terug in de antwoorden.\\
+
+Daarnaast blijkt uit de open antwoorden dat zelfs respondenten met een hoger technisch profiel niet altijd volledige zekerheid hebben over de herkomst en betekenis van data. Meerdere respondenten geven aan dat het lang duurt voor een dataset door en door gekend is, en dat zelfs na jaren werken met een dataset nog onverwachte effecten kunnen opduiken na een wijziging.\footnote{Bijvoorbeeld: ``het duurt heel lang voor je een dataset door en door kent. Zelfs na jaren ermee te werken kan er plots iets opduiken wat je niet had verwacht na een change''.} Dit bevestigt dat de complexiteit van datastromen niet uitsluitend een probleem is voor niet-technische gebruikers, maar ook voor personen die dichter bij de data staan.\\
+
+Deze bevindingen suggereren dat, zonder expliciet inzicht in dataherkomst en afhankelijkheden, gebruikers moeite blijven hebben om wijzigingen correct te interpreteren en de impact ervan breed in te schatten.\\
 
 \subsection{Ervaren meerwaarde van het lineage-overzicht}
 
-Na het tonen van de lineage-visualisatie geeft een groot deel van de respondenten aan dat dit overzicht hen helpt om sneller te zien waar cijfers vandaan komen en om beter te begrijpen waarom cijfers veranderen. Ook het inschatten van welke onderdelen of rapporten geraakt worden door wijzigingen wordt als duidelijker ervaren.\\
+Na het tonen van de lineage-visualisatie geeft een groot deel van de respondenten aan dat dit overzicht hen helpt om sneller te zien waar cijfers vandaan komen en om beter te begrijpen waarom cijfers veranderen. Ook het inschatten van welke onderdelen of rapporten beïnvloed worden door wijzigingen in data wordt door veel respondenten als duidelijker ervaren.\\
 
-Dit wijst erop dat het visualiseren van dataherkomst en afhankelijkheden een directe meerwaarde biedt voor het ondersteunen van impactanalyse op rapportniveau. De proof-of-concept slaagt er met andere woorden in om een belangrijk deel van de eerder geïdentificeerde knelpunten te adresseren.\\
+Dit wijst erop dat het visualiseren van dataherkomst en afhankelijkheden, zelfs in een vereenvoudigde vorm op tabelniveau, voor deze steekproef een directe meerwaarde biedt als ondersteuning bij impactanalyse op rapportniveau. De proof-of-concept lijkt er dus in te slagen om een aantal eerder geïdentificeerde knelpunten gedeeltelijk te adresseren, in het bijzonder het ontbreken van een centraal overzicht van betrokken datasets en rapporten.\\
 
-Tegelijkertijd blijkt uit zowel de Likert-scores als de open antwoorden dat deze meerwaarde niet volledig is. Meerdere respondenten geven aan dat het overzicht te generiek is en onvoldoende detail bevat om te begrijpen hoe specifieke waarden precies zijn opgebouwd. Er wordt onder meer gewezen op het ontbreken van informatie over transformaties, businesslogica en de betekenis van velden.\\
+Tegelijkertijd maken zowel de Likert-scores als de open antwoorden duidelijk dat deze meerwaarde niet volledig is. Meerdere respondenten geven aan dat het getoonde overzicht te generiek blijft en onvoldoende detail bevat om te begrijpen hoe specifieke waarden precies zijn opgebouwd. Er wordt onder meer gewezen op het ontbreken van informatie over transformaties, businesslogica, de betekenis van velden en de precieze inhoud van tabellen of subcomponenten.\footnote{Bijvoorbeeld: ``je hebt nu enkel bronnen, maar je weet niet hoe data binnen een bepaalde bron is opgebouwd'' en ``dit geeft de lineage weer, hetgeen zeker een eerste zicht geeft over de data en databronnen. Maar dat geeft nog niet weer hoe zo'n model opgebouwd is.''}\\
 
-Ook technisch onderlegde respondenten geven aan dat, hoewel het overzicht een eerste inzicht biedt in de structuur van de datastromen, het niet volstaat om complexe wijzigingen volledig te analyseren.\\
+De antwoorden tonen bovendien dat gebruikers behoefte hebben aan aanvullende context bovenop de visualisatie zelf. Zo vragen verschillende respondenten expliciet naar informatie over welke kolommen of velden exact gebruikt worden, hoe een waarde binnen een bron is opgebouwd, welke verwerking plaatsvindt tussen bron en rapport en hoe snel gegevens actueel zijn. Een aantal respondenten merkt ook op dat het huidige overzicht vooral een statische momentopname is, terwijl inzicht in timing, verwerking en wijzigingsgeschiedenis nuttig zou zijn om de impact van veranderingen beter te begrijpen.[\\
+
+Ook technisch onderlegde respondenten geven aan dat, hoewel het overzicht een eerste inzicht biedt in de structuur van de datastromen, het niet volstaat om complexe wijzigingen volledig te analyseren. De lineage-visualisatie uit de PoC wordt daardoor eerder gezien als een oriënterend hulpmiddel dan als een volledig verklarend instrument.
 
 \subsection{Impact op vertrouwen en gebruik}
 
-Wat betreft vertrouwen en gebruik geeft een meerderheid van de respondenten aan dat een dergelijk overzicht een positieve invloed kan hebben op het vertrouwen in rapporten. Daarnaast geven veel respondenten aan dat ze een dergelijke functionaliteit effectief zouden gebruiken indien deze beschikbaar is in hun werkomgeving.\\
+Wat betreft vertrouwen en gebruik geeft een meerderheid van de respondenten aan dat een dergelijk overzicht een positieve invloed kan hebben op het vertrouwen in rapporten. Daarnaast geven veel respondenten aan dat zij een dergelijke functionaliteit effectief zouden gebruiken indien deze beschikbaar is in hun werkomgeving, en dat zij het nuttig zouden vinden als rapporten standaard een link naar zo'n overzicht bevatten.
 
-Dit suggereert dat er een duidelijke behoefte bestaat aan meer transparantie in dataherkomst en afhankelijkheden, en dat lineage-overzichten hierin een belangrijke rol kunnen spelen.\\
+Dit suggereert dat er binnen deze steekproef een duidelijke behoefte bestaat aan meer transparantie in dataherkomst en afhankelijkheden, en dat lineage-overzichten daarin een belangrijke rol kunnen spelen.\\
 
-Tegelijk tonen de resultaten aan dat het verhogen van vertrouwen niet uitsluitend afhankelijk is van het zichtbaar maken van herkomst. Het ontbreken van detail en context in het overzicht vormt een belangrijke beperking voor het volledig begrijpen van cijfers en hun evolutie.\\
+Tegelijk tonen de resultaten aan dat het verhogen van vertrouwen niet uitsluitend afhankelijk is van het zichtbaar maken van herkomst. Het ontbreken van detail en context in het huidige overzicht vormt een belangrijke beperking voor het volledig begrijpen van cijfers en hun evolutie. Verschillende respondenten geven expliciet aan dat het vertrouwen pas echt toeneemt wanneer zij niet alleen zien \emph{waar} data vandaan komt, maar ook \emph{wat} er precies veranderd is, \emph{hoe} gegevens verwerkt werden en \emph{waarom} bepaalde conclusies in een rapport tot stand komen.\\
 
-\subsection{Synthese}
+Een aantal antwoorden benadrukt bovendien dat extra businessmetadata een belangrijke aanvulling zou zijn. Respondenten vragen om duidelijke definities van begrippen en indicatoren, om de koppeling tussen technische velden en businesstermen, en om een vlottere manier om van een bron- of veldnaam naar de betekenis ervan te navigeren. Dit wijst erop dat lineage op zichzelf wel bijdraagt aan transparantie, maar dat vertrouwen pas volledig ondersteund wordt wanneer technische herkomst gecombineerd wordt met semantische uitleg.\\
 
-Samenvattend tonen de resultaten dat gebruikers vandaag moeite hebben om wijzigingen in rapporten volledig te begrijpen en de impact ervan correct in te schatten. Het lineage-overzicht dat in deze proof-of-concept werd gerealiseerd biedt een duidelijke meerwaarde door inzicht te geven in de herkomst van data en de afhankelijkheden tussen datasets en rapporten.\\
+\subsection{Verschillen tussen gebruikersprofielen}
 
-Tegelijk blijkt dat deze vorm van lineage, voornamelijk op tabelniveau, onvoldoende is om de opbouw van specifieke waarden en de onderliggende logica volledig te begrijpen. Dit wijst erop dat lineage een belangrijke eerste stap vormt in het ondersteunen van impactanalyse, maar dat bijkomende detail en context noodzakelijk zijn om deze rol volledig te vervullen.\\
+Hoewel de steekproef niet groot genoeg is om statistisch robuuste vergelijkingen te maken, wijzen de antwoorden wel op enkele inhoudelijke verschillen tussen gebruikersprofielen.\\
+
+Respondenten die zelf rapporten bouwen of technisch met data werken, geven vaker aan dat zij reeds een zekere basiskennis hebben van de datastromen, maar benadrukken tegelijk dat zij niet altijd inzicht hebben in de volledige keten of in de logica achter data van andere teams. Voor hen is het overzicht vooral nuttig als eerste oriëntatie en als ondersteuning bij het opsporen van afhankelijkheden over team- of domeingrenzen heen.\\
+
+Rapportconsumenten focussen in hun antwoorden vaker op begrijpbaarheid en vertrouwen. Zij geven aan dat het visuele overzicht helpt om sneller te begrijpen waar cijfers vandaan komen, maar ook dat het moeilijk blijft om abstracte schema's correct te interpreteren zonder extra toelichting. Voor deze groep is vooral de vraag relevant of een waarde nog betrouwbaar en interpreteerbaar is wanneer er iets verandert in de onderliggende data.\\
+
+De resultaten suggereren bijgevolg dat de ervaren meerwaarde van lineage varieert naargelang het profiel van de gebruiker. Voor technische profielen ondersteunt lineage in de eerste plaats het identificeren van betrokken datasets en rapporten en het structureren van impactanalyses, terwijl niet-technische gebruikers er vooral baat bij hebben om de herkomst van cijfers en de betekenis van wijzigingen beter te begrijpen.\\
+
+\subsection{Synthese en kritische interpretatie}
+
+Samenvattend tonen de resultaten dat het lineage-overzicht in de context van deze proof-of-concept een zinvolle toevoeging is als eerste stap in het ondersteunen van impactanalyse. De PoC biedt respondenten een centraal, visueel zicht op herkomst en afhankelijkheden, waardoor zij sneller kunnen inschatten welke rapporten en datasets mogelijk betrokken zijn bij een wijziging. Daarmee wordt een belangrijk pijnpunt in het huidige proces aangepakt, namelijk het ontbreken van een centrale en doorzoekbare basis voor het identificeren van impact.\\
+
+Tegelijk blijkt dat een overzicht op tabelniveau onvoldoende is om de volledige impact van wijzigingen te begrijpen of om het vertrouwen in alle gevallen substantieel te verhogen. Respondenten vragen expliciet om meer detail, bijkomende businesscontext en zicht op transformaties, definities en de opbouw van specifieke waarden. Dit wijst erop dat lineage vooral waardevol is als basislaag voor transparantie en oriëntatie, maar dat bijkomende metadata nodig zijn om impactanalyse ook inhoudelijk en interpretatief te ondersteunen.\\
+
+De resultaten bevestigen dus dat de gerealiseerde proof-of-concept een relevante eerste stap vormt in de richting van beter ondersteunde impactanalyses bij VLAIO. De meerwaarde zit daarbij vooral in het zichtbaar maken van afhankelijkheden en het verhogen van de transparantie, terwijl de geformuleerde beperkingen duidelijk aangeven waar verdere uitbreidingen — zoals fijnmazigere lineage (bijvoorbeeld op kolomniveau) of aanvullende businessmetadata — mogelijk nodig zijn om de volledige potentie voor begrijpbaarheid en vertrouwen te realiseren.\\

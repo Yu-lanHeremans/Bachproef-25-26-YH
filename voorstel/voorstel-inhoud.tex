@@ -67,9 +67,9 @@ Vervolgens wordt een proof-of-concept opgezet met OpenMetadata en zullen dezelfd
 
 Data lineage verwijst naar de volledige weg die data in een organisatie aflegt van bron tot eindrapport \autocite{VLAIO}. Het beschrijft zowel de herkomst van de data, als alle transformaties die de data ondergaat en de afhankelijkheden ervan.
 
-Zoals \textcite{Verma2024} beschreven, beweegt data met verschillende stappen door een data pipeline, waarbij deze continu van structuur verandert. Data lineage bevat alle informatie omtrent deze stroom van data en toont hoe data wordt verzameld, verwerkt en uiteindelijk gebruikt binnen de organisatie. Het omvat zaken zoals het volgen van bestemmingen van gegevens, validatiestappen, kwaliteitscontroles, impactanalyses en vergemakkelijkt het opsporen van fouten en problemen.  
+Zoals \textcite{verma2024tracing} beschreven, beweegt data met verschillende stappen door een data pipeline, waarbij deze continu van structuur verandert. Data lineage bevat alle informatie omtrent deze stroom van data en toont hoe data wordt verzameld, verwerkt en uiteindelijk gebruikt binnen de organisatie. Het omvat zaken zoals het volgen van bestemmingen van gegevens, validatiestappen, kwaliteitscontroles, impactanalyses en vergemakkelijkt het opsporen van fouten en problemen.  
 
-Naast data lineage wordt er in veel literatuur ook gesproken over provenance \autocite{Secoda2024}. Data lineage is in feite het praktische aspect van provenance. Terwijl data lineage gaat over de route van data door verschillende systemen en processen, is provenance de hele geschiedenis en context die de data beschrijft. Een gebrek aan deze lineage of provenance zorgt ervoor dat het niet altijd duidelijk is wat nu tot een bepaald resultaat heeft geleid. Hierdoor ontstaat een verminderde controleerbaarheid van rapportages en impactanalyses, en een verhoogd risico op fouten in besluitvorming \autocite{Verma2024}.
+Naast data lineage wordt er in veel literatuur ook gesproken over provenance \autocite{Secoda2024}. Data lineage is in feite het praktische aspect van provenance. Terwijl data lineage gaat over de route van data door verschillende systemen en processen, is provenance de hele geschiedenis en context die de data beschrijft. Een gebrek aan deze lineage of provenance zorgt ervoor dat het niet altijd duidelijk is wat nu tot een bepaald resultaat heeft geleid. Hierdoor ontstaat een verminderde controleerbaarheid van rapportages en impactanalyses, en een verhoogd risico op fouten in besluitvorming \autocite{verma2024tracing}.
 
 \subsection{Compliance en transparantie}
 
@@ -77,7 +77,7 @@ Naast praktische voordelen zoals traceerbaarheid en foutopsporing is data lineag
 
 \subsection{Impactanalyses}
 
-Impactanalyses tonen aan welke gevolgen een wijziging of maatregel heeft op processen, systemen of personen binnen de organisatie en vereisen betrouwbare en reproduceerbare data \autocite{Verma2024}. Volledige data lineage is dus cruciaal voor het maken van goede impactanalyses. Een ontbrekende of onvolledige lineage kan het risico op foutieve conclusies verhogen en maakt daarnaast ook het analyseren van wijzigingen een traag proces \autocite{Bernardo2024}. Met lineage kan je zien hoe elke waarde in een rapport is ontstaan en waar deze vandaan komt, wat zorgt voor traceerbaarheid, reproduceerbaarheid en betrouwbaarheid \autocite{Wittner2022}. Data lineage draagt zo dus direct bij aan de transparantie en herleidbaarheid van impactanalyses, met als gevolg een hogere geloofwaardigheid van de resultaten voor stakeholders.
+Impactanalyses tonen aan welke gevolgen een wijziging of maatregel heeft op processen, systemen of personen binnen de organisatie en vereisen betrouwbare en reproduceerbare data \autocite{verma2024tracing}. Volledige data lineage is dus cruciaal voor het maken van goede impactanalyses. Een ontbrekende of onvolledige lineage kan het risico op foutieve conclusies verhogen en maakt daarnaast ook het analyseren van wijzigingen een traag proces \autocite{bernardo2024data}. Met lineage kan je zien hoe elke waarde in een rapport is ontstaan en waar deze vandaan komt, wat zorgt voor traceerbaarheid, reproduceerbaarheid en betrouwbaarheid \autocite{wittnerlightweight}. Data lineage draagt zo dus direct bij aan de transparantie en herleidbaarheid van impactanalyses, met als gevolg een hogere geloofwaardigheid van de resultaten voor stakeholders.
 
 \subsection{OpenMetadata als governance tool}
 
@@ -91,7 +91,7 @@ Community discussies op r/dataengineering en r/bigdata bevestigen positieve erva
 
 \subsection{Best practices}
 
-Uit meerdere literatuur- en casestudies komen verschillende succesfactoren naar voren bij het implementeren van data lineage. \autocite{Bernardo2024} benadrukt in een systematische review over data-governance dat organisaties de beste resultaten behalen, wanneer ze de implementatie in fases aanpakken. Door te starten met een kleiner aantal kritieke dataflows, geraken ze vertrouwd met het systeem, waardoor ze daarna kunnen uitbreiden naar de rest van het datalandschap. Dit zou volgens hen beter werken dan een big-bangimplementatie, die complex en risicovol is.  
+Uit meerdere literatuur- en casestudies komen verschillende succesfactoren naar voren bij het implementeren van data lineage. \autocite{bernardo2024data} benadrukt in een systematische review over data-governance dat organisaties de beste resultaten behalen, wanneer ze de implementatie in fases aanpakken. Door te starten met een kleiner aantal kritieke dataflows, geraken ze vertrouwd met het systeem, waardoor ze daarna kunnen uitbreiden naar de rest van het datalandschap. Dit zou volgens hen beter werken dan een big-bangimplementatie, die complex en risicovol is.  
 
 Daarnaast zijn managementondersteuning en duidelijke verantwoordelijkheden van belang bij het succesvol integreren van lineage/governance projecten \autocite{Dataversity2025}. Een veelvoorkomende uitdaging is de complexiteit van de bestaande data-omgevingen, verzet tegen veranderingen van medewerkers en technische beperkingen zoals automatisch detecteren van lineage bij legacy-systemen \autocite{Secoda2024}. De best practise is om te starten met goed gedocumenteerde, moderne systemen en stapsgewijs uit te breiden.
 
@@ -112,7 +112,7 @@ Er bestaat reeds literatuur over data governance en uitgebreide documentatie ove
 \subsection{Voorbereidende fase: Literatuurstudie}
 Voordat de case study start, wordt een literatuurstudie uitgevoerd om deelvraag 1 te beantwoorden. Dit omvat:
 \begin{itemize}
-\item Analyse van data lineage concepten en best practices (Verma2024, Bernardo2024)
+\item Analyse van data lineage concepten en best practices (Verma2024, bernardo2024data)
 \item Vergelijking van OpenMetadata met alternatieven (OpenMetadataDocs2024)
 \item Review relevante metrics voor data governance evaluatie
 \end{itemize}

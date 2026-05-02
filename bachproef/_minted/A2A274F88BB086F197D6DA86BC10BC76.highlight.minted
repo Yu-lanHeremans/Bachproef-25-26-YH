@@ -1,8 +1,8 @@
 \begin{MintedVerbatim}[commandchars=\\\{\}]
-    \PYG{n}{lineage\PYGZus{}results} \PYG{o}{=} \PYG{p}{[]}
+ \PYG{n}{lineage\PYGZus{}results} \PYG{o}{=} \PYG{p}{[]}
 
-    \PYG{c+c1}{\PYGZsh{} Vermijd dubbele lineage tussen exact dezelfde brontabel en hetzelfde dashboard.}
-    \PYG{n}{seen\PYGZus{}lineage\PYGZus{}pairs} \PYG{o}{=} \PYG{n+nb}{set}\PYG{p}{()}
+ \PYG{c+c1}{\PYGZsh{} Vermijd dubbele lineage tussen exact dezelfde brontabel en hetzelfde dashboard.}
+ \PYG{n}{seen\PYGZus{}lineage\PYGZus{}pairs} \PYG{o}{=} \PYG{n+nb}{set}\PYG{p}{()}
 
 	\PYG{k}{for} \PYG{n}{\PYGZus{}}\PYG{p}{,} \PYG{n}{row} \PYG{o+ow}{in} \PYG{n}{dashboards\PYGZus{}df}\PYG{o}{.}\PYG{n}{iterrows}\PYG{p}{():}
 	\PYG{n}{rapport\PYGZus{}naam} \PYG{o}{=} \PYG{n}{row}\PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}RapportNaam\PYGZdq{}}\PYG{p}{]}

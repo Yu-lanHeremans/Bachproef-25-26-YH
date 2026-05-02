@@ -3,36 +3,36 @@
 
 \section{Doel en positionering van de proof-of-concept}
 
-Zoals beschreven in Hoofdstuk~\ref{ch:contextanalyse} ontstaat de grootste zichtbaarheidskloof in de huidige lineageketen bij VLAIO tussen de platinum-datasets in de Databricks-lakehouse omgeving en de daarop gebaseerde Power BI-datasets en -rapporten. Deze proof-of-concept (PoC) heeft als doel om die laatste stap expliciet te maken in OpenMetadata, door Power BI-metadata systematisch te koppelen aan bestaande OpenMetadata-assets en daaruit een bruikbare lineageketen op te bouwen voor representatieve impactanalysecases, in het bijzonder de Steunster/Krissteunster-case.\\
+Zoals beschreven in Hoofdstuk~\ref{ch:contextanalyse} ontstaat de grootste zichtbaarheidskloof in de huidige lineageketen bij VLAIO tussen de platinum-datasets in de Databricks-lakehouse omgeving en de daarop gebaseerde Power BI-rapporten. Deze proof-of-concept (PoC) heeft als doel om die laatste stap expliciet te maken in OpenMetadata, door Power BI-metadata systematisch te koppelen aan bestaande tabellen in de vorm van OpenMetadata-entiteiten en daaruit een bruikbare lineageketen op te bouwen voor representatieve impactanalysecases, in het bijzonder rapporten gebaseerd op de Steunster- en Krissteunster-schema’s. Dit zijn datasetmodellen in de vorm van een sterschema, die een overzicht geven van alle steun die een onderneming bij VLAIO vraagt, krijgt en geweigerd wordt, met daarbij relevante informatie over maatregelen en dossierkenmerken. Krissteunster is daarbij een uitbreiding van Steunster.\\
 
-Hoewel de evaluatie en de illustratieve voorbeelden in dit hoofdstuk voornamelijk focussen op de Steunster/Krissteunster-case, is de onderliggende mappinglaag bewust generiek opgezet. De scripts voor naamgebaseerde matching worden toegepast op de volledige set Power BI-datasets uit de export (momenteel 418 datasets) en leveren voor een groot deel daarvan \texttt{confirmed}- of \texttt{confirmed\_multi}-matches op met platinum-datasets. De end-to-end lineageflow (inclusief dashboardcreatie en het effectief leggen van lineage-edges) wordt in deze PoC alleen volledig doorlopen voor een geselecteerde subset van rapporten, maar de aanpak zelf is herbruikbaar voor andere domeinen.\\
+Hoewel de evaluatie en de illustratieve voorbeelden in dit hoofdstuk voornamelijk focussen op de Steunster/Krissteunster-rapporten, is de onderliggende aanpak bewust generiek opgezet. De naamgebaseerde mappingscripts zijn ontwikkeld voor de volledige set Power BI-datasets uit de export (momenteel 418 datasets) en leveren voor een aanzienlijk deel daarvan overeenkomsten met platinum-datasets. De proof-of-concept werd aanvankelijk getest op een beperkte subset van Steunster en Krissteunster-rapporten, maar de uitgewerkte mapping- en lineage-logica is in principe toepasbaar op alle Power BI-rapporten waarvoor een betrouwbare koppeling naar platinum-datasets beschikbaar is. De volledige end-to-end-flow, inclusief dashboardcreatie en het effectief aanmaken van lineage-edges, werd binnen deze bachelorproef niet voor alle beschikbare Power BI REST-data uitgevoerd, aangezien dit veel uitvoeringstijd vergde en de werking van de PoC reeds voldoende was aangetoond met de geselecteerde testsubset.\\
 
 De PoC is uitgewerkt als een reeks herbruikbare Pythonscripts en Jupyter-notebooks in een Git-repository. De kernfunctionaliteit bestaat uit:
 \begin{itemize}
-	\item het opzetten en testen van een verbinding met de bestaande OpenMetadata-installatie;
-	\item het inlezen en verwerken van exports van Power BI-datasets en -rapporten, en van een overzicht van platinum-datasets;
-	\item het genereren van mappings tussen Power BI-datasetnamen en onderliggende platinum-datasets op basis van generieke naamgebaseerde heuristieken;
-	\item het aanmaken van dashboard-entities in OpenMetadata voor Power BI-rapporten;
-	\item het leggen van lineage-edges tussen platinum-tabellen en de aangemaakte dashboards.
+	\item het opzetten en testen van een verbinding met de OpenMetadata-client
+	\item het inlezen en verwerken van metadata over Power BI-datasets en -rapporten, en van een overzicht van platinum-datasets
+	\item het genereren van mappings tussen Power BI-datasetnamen en onderliggende platinum-datasets op basis van een hulpscript
+	\item het aanmaken van dashboard-entiteiten in OpenMetadata voor Power BI-rapporten
+	\item het leggen van lineage-edges tussen platinum-tabellen en de aangemaakte dashboards
 \end{itemize}
 
-Alle implementatiestappen zijn opgezet met het oog op herbruikbaarheid voor andere cases dan Steunster. Lokale configuratie (JWT-token, pad naar CSV-bestanden, testservice) wordt daarom gescheiden gehouden van de generieke logica voor mapping en lineage-opbouw.\\
+Alle implementatiestappen zijn opgezet met het oog op herbruikbaarheid voor andere datasets dan Steunster. Lokale configuratie (JWT-token, pad naar metadatafiles) wordt daarom gescheiden gehouden van de generieke logica voor mapping en lineage-opbouw.\\
 
 \section{Technische omgeving en architectuur}
 
-De PoC maakt gebruik van de bestaande OpenMetadata-omgeving binnen VLAIO. De verbinding gebeurt via de publieke API-endpoint \texttt{https://omd.data-services-dev.vlaio.be/api}, met een JWT-token dat lokaal als omgevingsvariabele (\texttt{JWT}) wordt ingelezen. Op basis daarvan wordt in het script \texttt{client\_config.py} een OpenMetadata-client opgebouwd, die in de rest van de repository wordt hergebruikt om entiteiten op te vragen en te creëren. De standaardservice voor Power BI-gerelateerde assets is \texttt{VLAIO\_POWERBI\_TEST}.\\
+De PoC maakt gebruik van de bestaande OpenMetadata-omgeving binnen VLAIO. De verbinding gebeurt via de publieke API-endpoint \texttt{https://omd.data-services-dev.vlaio.be/api}, met een JWT-token dat lokaal als omgevingsvariabele wordt ingelezen. Op basis daarvan wordt in het script \texttt{client\_config.py} een OpenMetadata-client opgebouwd, die in de rest van de repository wordt hergebruikt om entiteiten op te vragen en te creëren. Deze client is een python SDK client, die ervoor zorgt dat je makkelijk kan interageren met de API van OpenMetadata zonder dat je zelf rechtstreekse HTTP-verzoeken moet gebruiken. De standaardservice voor Power BI-gerelateerde entiteiten is \texttt{VLAIO\_POWERBI\_TEST}. Deze service was reeds aangemaakt in OpenMetadata en indien dit niet het geval zou zijn, kan de service eenvoudig worden aangemaakt via de OpenMetadata-gebruikersinterface of via de Python-SDK.\\
 
-De repository bevat een aantal kleine hulpscripts die de basisoperaties illustreren:
+De repository bevat daarnaast een aantal scripts die tijdens de ontwikkeling gebruikt werden om de interactie met de OpenMetadata-API stapsgewijs te verkennen en te valideren. Deze scripts vormen geen onderdeel van de uiteindelijke end-to-end-flow, maar hebben een belangrijke rol gespeeld in het opbouwen en testen van de kernfunctionaliteit:
 \begin{itemize}
-	\item \texttt{client\_config.py}: hulpfunctie om de OpenMetadata-client in te stellen en de verbinding te testen;
-	\item \texttt{create\_dashboard.py}: voorbeeldscript dat laat zien hoe een dashboard-entity aangemaakt kan worden via de SDK;
-	\item \texttt{add\_lineage\_edge.py}: voorbeeldscript om een lineage-edge tussen twee bestaande entiteiten toe te voegen;
-	\item \texttt{get\_table\_by\_id.py}: script om een tabel op te zoeken op basis van id of fully-qualified name (FQN) en het resultaat van de API-call te inspecteren.
+	\item \texttt{client\_config.py}: hulpfunctie om de OpenMetadata-client in te stellen en de verbinding te testen
+	\item \texttt{create\_dashboard.py}: voorbeeldscript dat laat zien hoe een dashboard-entiteit aangemaakt kan worden via de SDK
+	\item \texttt{add\_lineage\_edge.py}: voorbeeldscript om een lineage-edge tussen twee bestaande entiteiten toe te voegen
+	\item \texttt{get\_table\_by\_id.py}: script om een tabel op te zoeken op basis van id of fully-qualified name (FQN) en het resultaat van de API-call te inspecteren
 \end{itemize}
 
-Hoewel OpenMetadata standaard een Power BI-connector aanbiedt voor het automatisch inlezen van dashboards en lineage,\footnote{Zie bijvoorbeeld de OpenMetadata-documentatie voor de Power BI-connector.} kon deze in de VLAIO-context niet gebruikt worden. De nodige rechten en rechtstreekse toegang tot de Power BI REST API ontbreken op het niveau waarop OpenMetadata draait, waardoor een directe connectorconfiguratie niet haalbaar was. In theorie zou lineage ook volledig manueel kunnen worden opgebouwd via de gebruikersinterface, maar voor het aantal datasets en rapporten in scope zou dit een zeer arbeidsintensieve en foutgevoelige werkwijze zijn. Om die redenen is in deze PoC gekozen voor een alternatieve aanpak, waarbij Power BI-metadata via CSV-exports uit de Power BI REST API wordt ingelezen en vervolgens via de OpenMetadata-SDK programmatisch wordt omgezet naar dashboard-entities en lineage-edges.\\
+Hoewel OpenMetadata standaard een Power BI-connector aanbiedt voor het automatisch aanmaken van dashboards en lineage,\footnote{Zie de officiële documentatie van OpenMetadata voor de Power BI-connector: \url{https://docs.open-metadata.org/v1.12.x/connectors/dashboard/powerbi}.} kon deze in de VLAIO-context niet gebruikt worden. De nodige rechten en rechtstreekse toegang tot de Power BI REST API ontbreken op het niveau waarop OpenMetadata draait, waardoor een directe connectorconfiguratie niet haalbaar was. In theorie zou lineage ook volledig manueel kunnen worden opgebouwd via de gebruikersinterface, maar voor het aantal datasets en rapporten in scope zou dit een zeer arbeidsintensieve en foutgevoelige werkwijze zijn. Om die redenen is in deze PoC gekozen voor een alternatieve aanpak, waarbij Power BI-metadata uit Databricks — die daar beschikbaar is als resultaat van Power BI REST-exports — via CSV-bestanden wordt ingelezen en vervolgens via de OpenMetadata-SDK programmatisch wordt omgezet naar dashboard-entiteiten en lineage-edges.\\
 
-Voor de end-to-end-flow rond de Steunster-case wordt gewerkt met notebooks, in het bijzonder \texttt{steunster\_openmetadata\_lineage\_from\_yaml.ipynb}, waarin de volledige keten van gegevensinlees, mapping, dashboardcreatie en lineage-opbouw doorlopen wordt. Een apart notebook (\texttt{cleanup\_steunster\_lineage\_dashboards.ipynb}) ondersteunt het opschonen van testdashboards en test-lineage, zodat de omgeving proper gehouden kan worden tijdens iteratieve ontwikkel- en testcycli.\\
+Voor de end-to-end-flow rond de Steunster-case wordt gewerkt met notebooks, in het bijzonder \texttt{openmetadata\_lineage\_from\_yaml.ipynb}, waarin de volledige keten van gegevensinlees, mapping, dashboardcreatie en lineage-opbouw doorlopen wordt. Een aparte notebook (\texttt{cleanup\_steunster\_lineage\_dashboards.ipynb}) ondersteunt het opschonen van testdashboards en test-lineage, zodat de omgeving proper gehouden kan worden tijdens het ontwikkelen en testen.\\
 
 Tokens en andere geheimen worden niet in de notebooks zelf opgeslagen, maar via een lokale \texttt{.env}-configuratie ingelezen, zodat de code zelf herbruikbaar blijft zonder gevoelige informatie prijs te geven.\\
 
@@ -41,25 +41,49 @@ Tokens en andere geheimen worden niet in de notebooks zelf opgeslagen, maar via 
 De PoC combineert drie soorten metadata-bronnen:
 
 \begin{itemize}
-	\item exports van Power BI-datasets en -rapporten via de Power BI REST API;
-	\item een export van platinum-datasets uit de Databricks-lakehouseomgeving;
-	\item bestaande metadata in OpenMetadata voor Databricks-tabellen en Power BI-dashboards.
+	\item Power BI-metadata in Databricks (tabellen met informatie over datasets en rapporten, gevoed via de Power BI REST API)
+	\item een export van platinum-datasets uit de Databricks-lakehouseomgeving
+	\item bestaande metadata in OpenMetadata voor Databricks-tabellen en Power BI-dashboards
 \end{itemize}
 
-De Power BI-kant wordt gerepresenteerd via verschillende CSV-bestanden:
+De Power BI-kant wordt in deze PoC gerepresenteerd via CSV-bestanden die uit Databricks werden geëxporteerd:
 \begin{itemize}
-	\item \texttt{Sliver\_PowerBI\_Datasets.csv}: een lijst van Power BI-datasets (silver-niveau), met onder meer namen en ids;
-	\item \texttt{Silver\_PowerBI\_Steunster\_Datasets.csv}: een subset van Power BI-datasets die specifiek betrekking hebben op de Steunster/Krissteunster-case;
+	\item \texttt{PowerBI\_Datasets.csv}: een lijst van Power BI-datasets met onder meer namen en ids;
+	\item \texttt{PowerBI\_Steunster\_Datasets.csv}: één van de subsets van Power BI-datasets gebruikt voor het testen
 \end{itemize}
 
 Aan Databricks-zijde wordt gewerkt met:
 \begin{itemize}
-	\item \texttt{All\_Platinum\_Datasets.csv}: een overzicht van alle platinum-datasets, met technische namen en FQN’s.
+	\item \texttt{All\_Platinum\_Datasets.csv}: een overzicht van alle platinum-datasets aanwezig in de databricks omgeving
 \end{itemize}
 
-Deze CSV-bestanden worden in de notebooks ingelezen en in geheugenstructuren geplaatst die door de mapping-scripts gebruikt worden. De Power BI-exports vormen de bron voor het creëren van dashboard-entities, terwijl de platinum-export de ruimte afbakent waarbinnen naar passende bron-tabellen gezocht wordt. Hoewel in deze PoC gewerkt wordt met CSV-exports, is de gebruikte logica niet inherent afhankelijk van CSV-bestanden: in principe kan dezelfde mapping- en lineage-aanmaak ook rechtstreeks op de Databricks-tabellen worden toegepast, bijvoorbeeld via notebooks of jobs die de benodigde metadata direct uit de lakehouse-omgeving lezen. In het kader van deze bachelorproef is gekozen voor CSV-exports als pragmatische oplossing binnen de beschikbare tijd en rechten.\\
+De bedoeling is dus om alle PowerBI datastes te kopellen aan de bijhorende platinum datasets. Als deze mapping vastligt kan nadien correcte lineage toegeveogd worden.  Hoewel in deze PoC gewerkt wordt met CSV-exports uit Databricks, is de gebruikte logica niet inherent afhankelijk van CSV-bestanden: in principe kan dezelfde mapping- en lineage-aanmaak ook rechtstreeks op de Databricks-tabellen worden toegepast, door de benodigde metadata direct uit de lakehouseomgeving lezen. In het kader van deze bachelorproef is gekozen voor CSV-exports als pragmatische oplossing binnen de beschikbare tijd en rechten.\\
 
 Binnen OpenMetadata zelf zijn de Databricks-tabellen reeds geregistreerd via bestaande ingestietaken. De PoC voegt hieraan een extra laag toe: Power BI-dashboards en lineage-edges die laten zien welke platinum-tabellen de belangrijkste bron vormen voor een bepaald rapport.\\
+
+\paragraph{Afleiding van Power BI-rapporten uit Databricks.}
+
+Omdat OpenMetadata in de huidige VLAIO-omgeving niet rechtstreeks kan verbinden met de Power BI REST API, werd gebruikgemaakt van de afgeleide Power BI-metadata die reeds onder vele tabellen in Databricks beschikbaar is (onder meer \texttt{powerbirestapi\_report} en \texttt{powerbirestapi\_dataset}). Deze tabellen waren niet vooraf gedocumenteerd voor het doel van lineage, waardoor eerst manueel onderzocht moest worden welke combinaties van kolommen en joins nodig waren om een bruikbaar overzicht van rapporten en bijbehorende datasets op te bouwen. Na het verkennen van de relevante tabellen werd onderstaande query opgesteld als basis om de Steunster-rapporten te extraheren:
+
+\begin{lstlisting}[language=SQL, caption={Query om Power BI-rapporten en -datasets te selecteren uit Databricks}, label={lst:powerbirest-query}]
+	SELECT
+		r.RapportNaam,
+		r.WebUrl,
+		-- r.RapportOmschrijving,
+		d.DatasetNaam,
+		r.RapportID,
+		r.DatasetID
+	FROM ccdata_dev.silver.powerbirestapi_report r
+	JOIN ccdata_dev.silver.powerbirestapi_dataset d
+	ON r.DatasetID = d.DatasetID
+	WHERE d.DatasetNaam = 'VLAIO Steunster'
+	ORDER BY r.RapportNaam
+	LIMIT 20;
+\end{lstlisting}
+
+De kolom \texttt{RapportOmschrijving} werd hier bewust niet gebruikt, omdat deze in de praktijk vrijwel altijd leeg bleek en dus weinig meerwaarde had voor de PoC. Indien deze ingevuld is kan je deze ook meegeven aan OpenMetadata. Op basis van de queryresultaten werd een CSV-export gemaakt die vervolgens in de notebook werd ingelezen als input voor de mapping- en lineage-scripts. Dit was noodzakelijk omdat op het moment van de implementatie nog geen permissies beschikbaar waren om vanuit Databricks rechtstreeks met de OpenMetadata-API te verbinden. Conceptueel is de aanpak echter niet beperkt tot CSV-bestanden: dezelfde SQL-query kan in een latere fase rechtstreeks als bron dienen voor een geautomatiseerde lineageflow, waarbij de resultaten zonder tussenstap naar OpenMetadata worden geschreven.\\
+
+In de query hierboven wordt gefilterd op \texttt{DatasetNaam = 'VLAIO Steunster'} om de eerste experimenten te focussen op één concrete dataset. Deze filter is niet strikt noodzakelijk: in principe kan hetzelfde patroon zonder deze voorwaarde worden toegepast op alle rapporten in de powerbirestapi-tabellen, waarna de generieke mappinglogica de koppeling naar de onderliggende platinum-datasets voor het volledige Power BI-landschap kan maken.\\
 
 \section{Mapping van Power BI-datasets naar platinum-datasets}
 
@@ -67,40 +91,25 @@ Binnen OpenMetadata zelf zijn de Databricks-tabellen reeds geregistreerd via bes
 
 De kern van de PoC is een generieke mappinglaag die Power BI-datasetnamen koppelt aan de onderliggende platinum-datasets. Deze mapping gebeurt niet via handmatig ingevulde lijsten, maar via een set heuristieken die de namen in beide domeinen op verschillende manieren met elkaar vergelijkt. De implementatie is opgesplitst in twee scripts:
 \begin{itemize}
-	\item \texttt{\_build\_mapping\_sliver.py}: bouwt een basis-mapping tussen de volledige lijst van Power BI-datasets (silver) en de platinum-datasetlijst;
-	\item \texttt{\_build\_mapping\_strict.py}: verfijnt de mapping en filtert op de meest betrouwbare matches.
+	\item \texttt{\_build\_mapping.py}: bouwt een basis-mapping tussen de volledige lijst van Power BI-datasets en de platinum-datasetlijst
+	\item \texttt{\_build\_mapping\_strict.py}: verfijnt de mapping en filtert op de meest betrouwbare matches
 \end{itemize}
 
-De scripts voeren eerst een normalisatie van namen uit (bijvoorbeeld lowercasing, verwijderen van speciale tekens, hanteren van consistentie bij camelCase en domeintermen zoals \emph{contactcenter}), en passen vervolgens verschillende heuristieken toe om mogelijke matches te scoren.\\
+De scripts voeren eerst een normalisatie van namen uit (bijvoorbeeld lowercasing, verwijderen van speciale tekens, hanteren van consistentie bij camelCase en enkele uitzonderingen en passen vervolgens verschillende heuristieken toe om mogelijke matches te scoren.\\
 
-In de context van deze bachelorproef wordt de mappinggenerator vooral gebruikt als hulpmiddel om een eerste, zo volledig mogelijke basisversie van de YAML-configuratie voor Power BI–platinum-mapping op te bouwen en om manuele mappingarbeid te beperken. Het is niet de bedoeling dat deze scripts één-op-één als verplicht onderdeel van de toekomstige operationele processen bij VLAIO worden overgenomen, maar eerder dat ze aantonen hoe een naamgebaseerde aanpak kan helpen om een correct uitgangspunt voor verdere verfijning te creëren.\\
+In de context van deze bachelorproef wordt de mappinggenerator vooral gebruikt als hulpmiddel om een eerste, zo volledig mogelijke basisversie van de YAML configuratie voor Power BI–platinum-mapping op te bouwen en om manuele mappingarbeid te beperken. Het is niet de bedoeling dat deze scripts één-op-één als verplicht onderdeel van de toekomstige operationele processen bij VLAIO worden overgenomen, maar eerder dat ze aantonen hoe een naamgebaseerde aanpak kan helpen om een correct startpunt voor verdere verbetering te creëren.\\
 
 \subsection{Heuristieken en outputstructuur}
 
-De volgende heuristieken worden gebruikt in de mapping-logica:
-\begin{itemize}
-	\item \emph{exact\_norm} en \emph{exact\_compact}: exact gematchte namen na respectievelijk normale en meer agressieve normalisatie;
-	\item \emph{contains\_norm} en \emph{contains\_compact}: deelstringmatches in genormaliseerde namen, om gevallen op te vangen waar een datasetnaam een basisnaam plus extra context bevat;
-	\item \emph{fuzzy\_compact}: fuzzy matching op sterk genormaliseerde namen, zodat kleine schrijfvariaties of typfouten geen blokkering vormen;
-	\item \emph{token\_subset} en \emph{token\_fuzzy}: token-gebaseerde vergelijkingen, waarbij namen in woorden worden opgesplitst en subsets of fuzzy overeenkomsten tussen tokens worden gezocht.
-\end{itemize}
+De mappinglogica combineert verschillende naamgebaseerde vergelijkingsstrategieën, zoals exacte matching, deelstringvergelijkingen, fuzzy matching en token-gebaseerde vergelijkingen. Op basis van de gecombineerde scores worden potentiële koppelingen tussen Power BI- en platinum-datasets automatisch geclassificeerd naar betrouwbaarheid. De resultaten worden vervolgens weggeschreven naar aparte CSV-bestanden, zodat duidelijke matches rechtstreeks gebruikt kunnen worden en twijfelgevallen apart beschikbaar blijven voor eventuele manuele controle.\\
 
-Op basis van gecombineerde scores uit deze heuristieken worden potentiële matches geclassificeerd in verschillende categorieën en weggeschreven naar aparte CSV-bestanden:
+De mapping-output ondersteunt ook multi-mapping. Elke Power BI-dataset kan, indien nodig, aan meerdere platinum-datasets gekoppeld worden. De kolom \texttt{platinum\_datasets} bevat dan een lijst van kandidaten, en \texttt{match\_count} geeft het aantal matches aan. Dergelijke composite-situaties krijgen een aparte status, \texttt{confirmed\_multi}, zodat downstream-logica hiermee rekening kan houden. Een voorbeeld hiervan is \texttt{Krissteunster-Steunster Composite model} die gemapt moet worden naar zowel Steunster als Krissteunster.\\
 
-\begin{itemize}
-	\item \texttt{Sliver\_PowerBI\_to\_Platinum\_mapping\_strict.csv}: bevat de striktste matches op basis van hoge overeenstemmingsscores;
-	\item \texttt{Sliver\_PowerBI\_to\_Platinum\_mapping\_confirmed.csv}: definitieve matches die als voldoende betrouwbaar worden beschouwd;
-	\item \texttt{Sliver\_PowerBI\_to\_Platinum\_mapping\_review.csv}: twijfelgevallen die manuele review vereisen;
-	\item \texttt{Sliver\_PowerBI\_to\_Platinum\_mapping\_suggested.csv}: minder zekere suggesties die eventueel later verder verfijnd worden.
-\end{itemize}
-
-De mapping-output ondersteunt expliciet \emph{multi-mapping}. Elke Power BI-dataset kan, indien nodig, aan meerdere platinum-datasets gekoppeld worden. De kolom \texttt{platinum\_datasets} bevat dan een lijst van kandidaten, en \texttt{match\_count} geeft het aantal matches aan. Dergelijke composite-situaties krijgen een aparte status, \texttt{confirmed\_multi}, zodat downstream-logica hiermee rekening kan houden.\\
-
-In de meest recente run telde de mappinggenerator 418 Power BI-datasets, waarvan 117 als \texttt{confirmed} en 4 als \texttt{confirmed\_multi} werden geclassificeerd. De overige 297 bleven \texttt{unmatched} en vormen input voor verdere verfijning van de heuristieken of manuele beoordeling wanneer de PoC in de toekomst wordt uitgebreid.\\
+In de meest recente run verwerkte de mappinggenerator 418 Power BI-datasets, waarvan 117 als \texttt{confirmed} en 4 als \texttt{confirmed\_multi} werden geclassificeerd. De overige 297 datasets bleven \texttt{unmatched}. Dat is niet noodzakelijk een tekortkoming van de mappinglogica: veel Power BI-datasets hebben geen directe of zinvolle tegenhanger in de platinum-laag en kunnen daarom normaal gezien niet gekoppeld worden. Deze niet-gematchte gevallen vragen wel een manuele controle om te onderscheiden tussen terecht niet-koppelbare datasets en uitzonderingen waarvoor de heuristieken nog verfijnd kunnen worden.\\
 
 \paragraph{Voorbeeld van mapping-output (CSV).}
 
-Onderstaand fragment illustreert hoe de mapping eruitziet in \texttt{PowerBI\_to\_Platinum\_mapping\_confirmed.csv}:
+Onderstaand fragment illustreert hoe de output van het mappingscript eruitziet in \texttt{PowerBI\_to\_Platinum\_mapping\_confirmed.csv}. Hieruit blijkt dat de naam van een Power BI-dataset niet noodzakelijk exact hoeft overeen te komen met de naam van de bijhorende platinum-dataset om toch tot een correcte koppeling te komen. De gegenereerde mapping dient daarbij vooral als een eerste, reproduceerbare basis die manueel werk vermindert. Vooraleer deze mappings worden omgezet naar de YAML-configuratie die effectief gebruikt wordt voor het aanmaken van lineage, moeten ze uiteraard manueel nagekeken worden.
 
 \begin{table}[h]
 	\centering
@@ -129,377 +138,251 @@ Onderstaand fragment illustreert hoe de mapping eruitziet in \texttt{PowerBI\_to
 
 \paragraph{Voorbeeld van Power BI-datasetmappings (YAML).}
 
-In \texttt{PowerBI\_Dataset\_Mappings.yml} wordt per Power BI-dataset vastgelegd naar welke logische platinum-dataset(s) deze moet verwijzen:
+Dat laatste is bijvoorbeeld het geval in het onderstaande fragment voor \texttt{Epplus betalingen}. Deze Power BI-dataset wordt enerzijds nog steeds logisch gekoppeld aan de platinum-dataset \texttt{r\_epplus}, maar anderzijds wordt ook expliciet de tabel \texttt{epp\_betalingen} meegegeven. Hierdoor verwijst de lineage in dit geval niet naar alle fact- of brontabellen binnen \texttt{r\_epplus}, maar enkel naar de concrete tabel waarvoor voldoende zekerheid bestaat dat ze effectief in het rapport gebruikt wordt. De YAML-structuur laat dus zowel generieke mappings op datasetniveau als meer precieze mappings op tabelniveau toe, afhankelijk van de hoeveelheid beschikbare metadata.
 
 \begin{lstlisting}[language=YAML, caption={Fragment uit PowerBI_Dataset_Mappings.yml}, label={lst:yaml-pbi}]
 	- PBIDataset: VLAIO Steunster
 	  target_datasets:
-	    - steunster
+		- steunster
 	
 	- PBIDataset: KRISsteunster
 	  target_datasets:
-	    - krissteunster
+		- krissteunster
 	
 	- PBIDataset: Krissteunster-Steunster Composite model
 	  target_datasets:
-	    - krissteunster
-	    - steunster
+		- krissteunster
+		- steunster
+	
+	- PBIDataset: Dataset PBIDatasetsMetRollen
+	  target_datasets:
+		- r_pbidatasetsmetrollen
+		
+	- PBIDataset: Epplus betalingen
+	  target_datasets:
+			- r_epplus
+	  target_tables:
+		- lz02-d-dbw-ccdata-main.platinum_dev.r_epplus.epp_betalingen
+	
 \end{lstlisting}
 
 \paragraph{Voorbeeld van platinum-datasetmappings (YAML).}
 
-In \texttt{Platinum\_Dataset\_Mappings.yml} worden de logische platinum-datasets verder vertaald naar één of meerdere technische tabel-FQN’s in Databricks:
+Aangezien lineage in OpenMetadata volgens de gangbare aanpak op tabelniveau wordt vastgelegd, volstaat het niet om enkel een koppeling te maken tussen een Power BI-dataset en een logische platinum-dataset. Daarom werd aanvullend een manuele mapping opgesteld waarin per platinum-dataset wordt vastgelegd welke concrete tabellen als meest relevante bron voor de lineage beschouwd worden. Daarbij wordt in de eerste plaats gekozen voor facttabellen wanneer die beschikbaar zijn, en anders voor de belangrijkste tabellen binnen de betrokken dataset.\\
+
+In \texttt{Platinum\_Dataset\_Mappings.yml} worden de logische platinum-datasets verder vertaald naar één of meerdere technische tabel-FQN’s in Databricks. Daarbij wordt bewust met fully qualified names (FQN’s) gewerkt, omdat deze niet alleen eenduidig verwijzen naar de juiste tabel binnen de Databricks-omgeving, maar ook noodzakelijk zijn om de overeenkomstige tabelentiteiten correct op te zoeken en te gebruiken in OpenMetadata. Deze YAML-configuratie is makkelijk uitbreidbaar en aanpasbaar. Nieuwe datasets of bijkomende tabellen kunnen zonder aanpassing van de onderliggende scriptlogica worden toegevoegd, terwijl bestaande mappings ook eenvoudig verfijnd kunnen worden wanneer extra domeinkennis beschikbaar komt of de datamodellen wijzigen.
 
 \begin{lstlisting}[language=YAML, caption={Fragment uit Platinum_Dataset_Mappings.yml}, label={lst:yaml-platinum}]
 	- dataset: krissteunster
 	  target_tables:
-	    - lz02-d-dbw-ccdata-main.platinum_dev.krissteunster.f_steun
-	    - lz02-d-dbw-ccdata-main.platinum_dev.krissteunster.f_steunster
-	    - lz02-d-dbw-ccdata-main.platinum_dev.krissteunster.f_steunster_toegevoegdewaarde
+		- lz02-d-dbw-ccdata-main.platinum_dev.krissteunster.f_steun
+		- lz02-d-dbw-ccdata-main.platinum_dev.krissteunster.f_steunster
+		- lz02-d-dbw-ccdata-main.platinum_dev.krissteunster.f_steunster_toegevoegdewaarde
 	
 	- dataset: steunster
 	  target_tables:
-	    - lz02-d-dbw-ccdata-main.platinum_dev.steunster.f_steun
+		- lz02-d-dbw-ccdata-main.platinum_dev.steunster.f_steun
 \end{lstlisting}
-
-\subsection{Voorbeelden uit de businesscontext}
-
-De mapping-logica is getest op verschillende businessdomeinen. Een aantal concrete voorbeelden zijn:
-\begin{itemize}
-	\item Power BI-varianten rond ondernemingsfoto worden correct gemapt naar de platinum-dataset \texttt{r\_ondernemingsfoto};
-	\item een composite-model \emph{Krissteunster-Steunster} wordt gemapt naar \texttt{krissteunster;steunster}, wat aangeeft dat het rapport op meerdere platinum-datasets steunt;
-	\item eerdere medium-reviewcases (zoals IPDC, KPI, VLIR en O365 contactcenter) schuiven nu door naar de categorie \texttt{confirmed}, op basis van verbeterde generieke logica in plaats van handmatige overrides.
-\end{itemize}
-
-Deze voorbeelden tonen aan dat de mappinglaag in staat is om domeinspecifieke naamgeving redelijk goed te interpreteren, zolang de onderliggende naamgeving in Power BI en Databricks enigszins consistent blijft.\\
 
 \section{Dashboards en lineage in OpenMetadata}
 
 \subsection{End-to-end-flow voor Steunster}
 
-De notebook \texttt{steunster\_openmetadata\_lineage\_from\_yaml.ipynb} implementeert een end-to-end-flow voor de Steunster- en Krissteunster-rapporten. Deze flow bestaat uit de volgende stappen:
+De end-to-end-aanpak voor de Steunster-rapporten bestaat uit meerdere opeenvolgende stappen. Niet al deze stappen worden in de notebook \texttt{steunster\_openmetadata\_lineage\_from\_yaml.ipynb} zelf uitgevoerd. De voorbereiding gebeurt deels vooraf en omvat het verzamelen van de nodige Power BI-metadata, het genereren en manueel valideren van de mappings, en het opstellen van de YAML-configuraties. De notebook gebruikt deze voorbereide input vervolgens om de effectieve OpenMetadata-flow uit te voeren, namelijk het opzoeken van de juiste tabel-entiteiten, het aanmaken van dashboard-entiteiten en het leggen van de overeenkomstige lineage-relaties. De volledige flow bestaat uit:
 \begin{enumerate}
-	\item inlezen van de CSV met Steunster-specifieke Power BI-datasets (\texttt{Silver\_PowerBI\_Steunster\_Datasets.csv}) en, indien nodig, bijkomende rapportinformatie;
-	\item voor elk geselecteerd rapport bepalen welke Power BI-dataset eraan gekoppeld is;
-	\item op basis van de \texttt{confirmed}- of \texttt{confirmed\_multi}-mapping de best passende platinum-dataset(s) zoeken;
-	\item opzoeken van de corresponderende platinum-tabel(len) in OpenMetadata via hun fully-qualified name of id;
-	\item aanmaken van een dashboard-entity in OpenMetadata voor elk relevant Power BI-rapport, met verwijzing naar de juiste Power BI-service en dataset;
-	\item aanmaken van lineage-edges van de platinum-tabel(len) naar het aangemaakte dashboard.
+	\item verzamelen en voorbereiden van de nodige Power BI-metadata;
+	\item bepalen welke Power BI-dataset aan elk geselecteerd rapport gekoppeld is;
+	\item genereren en valideren van mappings tussen Power BI-datasets en platinum-datasets;
+	\item vastleggen van de relevante platinum-tabellen in YAML-configuratie;
+	\item opzoeken van de corresponderende tabel-entiteiten in OpenMetadata via hun fully qualified name of id;
+	\item aanmaken van dashboard-entiteiten in OpenMetadata voor de relevante Power BI-rapporten;
+	\item aanmaken van lineage-edges van de geselecteerde platinum-tabellen naar de aangemaakte dashboards.
 \end{enumerate}
 
-De focus ligt op lineage op tabelniveau: voor elk rapport wordt minstens één lineage-edge gelegd vanaf de belangrijkste platinum-tabel (vaak de facttabel) naar het dashboard, aangevuld met extra edges in composite-situaties. Op die manier ontstaat een visueel traceerbare keten van bronsystemen via medallion-lagen (bronze, silver, platinum) tot en met de rapportages die in impactanalyses centraal staan.\\
+De focus ligt op lineage op tabelniveau: voor elk rapport wordt minstens één lineage-edge gelegd vanaf de belangrijkste platinum-tabel, vaak de facttabel(s) naar het dashboard, aangevuld met extra edges bij samengestelde datasets. Op die manier ontstaat ereen visueel traceerbare keten van bronsystemen via medallion-lagen (bronze, silver, platinum) tot en met de rapportages.\\
 
 \subsection{Belangrijkste notebook-code}
 
-Onderstaande fragmenten tonen de kernlogica uit de notebook voor Steunster: het opzetten van de OpenMetadata-connectie, het inlezen van rapporten en YAML-mappings en het aanmaken van dashboards en lineage-edges.
+Onderstaande fragmenten tonen de kernlogica uit de notebook: het opzetten van de OpenMetadata-connectie, het inlezen van rapporten en YAML-mappings en het aanmaken van dashboards en lineage-edges. Enkel de belangrijkste code wordt weergegeven; imports, debug-prints, uitvoercontroles en enkele helperfuncties zijn weggelaten voor de leesbaarheid.
 
 \paragraph{OpenMetadata-connectie}
 
-Dit codefragment initialiseert de verbinding met OpenMetadata en zorgt ervoor dat de notebook geauthenticeerd kan communiceren met het metadata-platform. Eerst wordt het JWT-token uit de omgevingsvariabelen geladen, waarna de connectieparameters voor de OpenMetadata-server en de dashboardservice worden ingesteld. Tot slot wordt gecontroleerd of de verbinding succesvol tot stand komt, zodat de volgende stappen enkel worden uitgevoerd wanneer de metadata-omgeving bereikbaar is.\\
+Dit codefragment initialiseert de verbinding met OpenMetadata en zorgt ervoor dat de notebook geauthenticeerd kan communiceren met het metadata-platform. Eerst wordt een JWT-token uit de omgevingsvariabelen geladen, waarna de connectieparameters voor de OpenMetadata-server en de dashboardservice worden ingesteld. Tot slot wordt gecontroleerd of de verbinding succesvol tot stand komt, zodat de volgende stappen enkel worden uitgevoerd wanneer de metadata-omgeving bereikbaar is.\\
 
-\begin{minted}[label={om-connectie}]{python}
-    import os
-    import re
-    from typing import Optional
-	
-    import pandas as pd
-    from dotenv import load_dotenv
-    import yaml
-	
-	from metadata.sdk import configure
-	from metadata.sdk.entities import Dashboards, Tables
-	from metadata.generated.schema.api.data.createDashboard import CreateDashboardRequest
-	from metadata.ingestion.ometa.ometa_api import OpenMetadata
-	from metadata.generated.schema.entity.services.connections.metadata.openMetadataConnection import OpenMetadataConnection
-	from metadata.generated.schema.security.client.openMetadataJWTClientConfig import OpenMetadataJWTClientConfig
-	from metadata.generated.schema.type.entityReference import EntityReference
-	from metadata.generated.schema.api.lineage.addLineage import AddLineageRequest
-	from metadata.generated.schema.type.entityLineage import EntitiesEdge, LineageDetails
-	
-	# Laad lokale configuratie, waaronder het JWT-token.
-	load_dotenv()
-	jwt = os.getenv("JWT")
-	
-	# Breek expliciet af wanneer geen geldig token beschikbaar is.
-	if not jwt:
-	raise ValueError("JWT ontbreekt. Zet JWT in je .env bestand.")
-	
-	# Definieer de OpenMetadata-host en de dashboardservice.
-	OM_HOST = "https://omd.data-services-dev.vlaio.be/api"
-	DASHBOARD_SERVICE = "VLAIO_POWERBI_TEST"
-	
-	# Bouw de serverconfiguratie voor de OpenMetadata-client op.
-	server_config = OpenMetadataConnection(
+\begin{lstlisting}[language=python, caption={OpenMetadata clientconnectie}, label={lst:om-connectie}]
+# (hier worden alle imports en omgevingsvariabelen geladen)
+jwt = os.getenv("JWT")
+
+# Hier wordt de OpenMetadata-host en de dashboardservice ingesteld
+OM_HOST = "https://omd.data-services-dev.vlaio.be/api"
+DASHBOARD_SERVICE = "VLAIO_POWERBI_TEST"
+
+# Serverconfiguratie voor de OpenMetadata-client en eronder de SDK-client
+server_config = OpenMetadataConnection(
 	hostPort=OM_HOST,
 	authProvider="openmetadata",
-	securityConfig=OpenMetadataJWTClientConfig(jwtToken=jwt),
-	)
-	
-	# Initialiseer de client en controleer de connectie.
-	metadata = OpenMetadata(server_config)
-	
-	if not metadata.health_check():
-	raise RuntimeError("Geen connectie met OpenMetadata.")
-	
-	# Configureer ook de SDK-helperfuncties.
-	configure(host=OM_HOST, jwt_token=jwt)
-	
-	print("OpenMetadata connectie OK")
-\end{minted}
+	securityConfig=OpenMetadataJWTClientConfig(jwtToken=jwt),)
+
+# initialisatie ometa-client en SDK-client
+metadata = OpenMetadata(server_config)
+configure(host=OM_HOST, jwt_token=jwt)
+\end{lstlisting}
 
 \paragraph{Inlezen van rapporten en YAML-mappings}
 
-In volgend codefragment worden enerzijds de Power BI-rapporten uit een CSV-bestand ingelezen en anderzijds de mappingbestanden in YAML-formaat verwerkt. Vervolgens worden hulpfuncties gedefinieerd om sleutels te normaliseren, lijsten van tabellen op te bouwen en dubbele waarden te verwijderen met behoud van volgorde. Op basis daarvan wordt een resolver opgebouwd die per Power BI-dataset de juiste brontabellen bepaalt, met prioriteit voor rechtstreeks opgegeven tabellen en een fallback via gekoppelde platinum-datasets.\\
+In volgend codefragment worden enerzijds de Power BI-rapporten uit een CSV-bestand ingelezen en anderzijds de mappingbestanden in YAML-formaat verwerkt. Vervolgens worden hulpfuncties gedefinieerd om sleutels te normaliseren, lijsten van tabellen op te bouwen en dubbele waarden te verwijderen met behoud van volgorde. Op basis daarvan wordt een resolver opgebouwd die per Power BI-dataset de juiste brontabellen bepaalt, met prioriteit voor rechtstreeks opgegeven tabellen en een fallback via gekoppelde platinum-datasets. Het inladen van de Power BI-data, de mappings en de hulpfuncties zijn hier weggelaten.\\
 
-\begin{minted}[label={yaml-logica}]{python}
-    # Lees het overzicht van Power BI-rapporten in.
-    df = pd.read_csv("Datasets/Rapporten_Steunster.csv")
-    print(f"Aantal rapporten in CSV: {len(df)}")
-	
-	# Definieer de paden naar de YAML-mappings.
-	POWER_BI_MAPPING_PATH = "PowerBI_Dataset_Mappings.yml"
-	PLATINUM_MAPPING_PATH = "Platinum_Dataset_Mappings.yml"
-	
-	
-	def normalize_key(value: str) -> str:
-	"""Normaliseer sleutels zodat vergelijkingen robuust en case-insensitive verlopen."""
-	return str(value or "").strip().lower()
-	
-	
-	def to_str_list(value) -> list[str]:
-	"""Zet een waarde veilig om naar een lijst van niet-lege strings."""
-	if isinstance(value, list):
-	return [str(v).strip() for v in value if str(v).strip()]
-	return []
-	
-	
-	def unique_preserve_order(values: list[str]) -> list[str]:
-	"""Verwijder dubbels zonder de oorspronkelijke volgorde te verliezen."""
-	seen = set()
-	result = []
-	
-	for value in values:
-	if value not in seen:
-	seen.add(value)
-	result.append(value)
-	
-	return result
-	
-	
-	# Lees de Power BI-mappings in.
-	with open(POWER_BI_MAPPING_PATH, "r", encoding="utf-8") as f:
-	power_bi_yaml = yaml.safe_load(f) or {}
-	
-	# Lees de platinum-mappings in.
-	with open(PLATINUM_MAPPING_PATH, "r", encoding="utf-8") as f:
-	platinum_yaml = yaml.safe_load(f) or {}
-	
-	# Bouw een map op van Power BI-datasetnaam naar mappinginformatie.
-	power_bi_map = {}
-	for item in power_bi_yaml.get("datasets", []):
+\begin{lstlisting}[language=python, caption={PBI-data en mappings inladen en verwerken}, label={lst:yaml-logica}]
+POWERBI_MAPPING_PATH = "PowerBI_Dataset_Mappings.yml"
+PLATINUM_MAPPING_PATH = "Platinum_Dataset_Mappings.yml"
+
+# Hier worden twee dictionaries aangemaakt: 
+# 1) Power BI naar platinumdataset
+power_bi_map = {}
+for item in power_bi_yaml.get("datasets", []):
 	pbi_name = str(item.get("PBIDataset", "")).strip()
-	
 	if not pbi_name:
-	continue
-	
+		continue
 	power_bi_map[normalize_key(pbi_name)] = {
 		"target_tables": to_str_list(item.get("target_tables", [])),
-		"target_datasets": to_str_list(item.get("target_datasets", [])),
-	}
-	
-	# Bouw een map op van platinum-datasetnaam naar technische tabellen.
-	platinum_map = {}
-	for item in platinum_yaml.get("datasets", []):
+		"target_datasets": to_str_list(item.get("target_datasets", [])),}
+
+# 2) platinumdataset naar correcte tabel(len)
+platinum_map = {}
+for item in platinum_yaml.get("datasets", []):
 	dataset_name = str(item.get("dataset", "")).strip()
-	
 	if not dataset_name:
-	continue
-	
-	platinum_map[normalize_key(dataset_name)] = to_str_list(
-	item.get("target_tables", [])
-	)
-	
-	
-	def resolve_source_table_fqns(dataset_name: str) -> list[str]:
-	"""
-	Bepaal de bron-tabellen voor een Power BI-dataset.
-	
-	Prioriteit:
-	1. direct opgegeven target_tables in de Power BI YAML;
-	2. target_datasets uit de Power BI YAML, vertaald via de Platinum YAML.
-	"""
+		continue
+	platinum_map[normalize_key(dataset_name)] = to_str_list(item.get("target_tables", []))
+\end{lstlisting}
+
+Na het opbouwen van de opzoektabellen wordt de logica gedefinieerd om de effectieve technische brontabellen te bepalen. De functie \texttt{resolve\_source\_table\_fqns} gebruikt hierbij een prioriteitsregeling: er wordt eerst gezocht naar direct gedefinieerde tabellen in de mapping, en bij afwezigheid daarvan wordt de koppeling gelegd via de overkoepelende platinum-datasets. Dit is zo geïmplementeerd voor de uitzonderlijke gevallen waarin wel meegegeven wordt welke specifieke tabel uit het schema gebruikt wordt. Meestal ontbreekt deze informatie en wordt gemapt naar de belangrijkste tabel(len). Tot slot wordt een hulpfunctie geïmplementeerd die de OpenMetadata-SDK aanroept om de effectieve tabelentiteiten op te zoeken op basis van hun Fully Qualified Name, die is opgebouwd als \texttt{databaseservice.database.schema.table}.\\
+
+\begin{lstlisting}[language=python, caption={Functies voor het opzoeken van de brontabel}, label={lst:table-resolver}]
+# Bepaal de bron-tabellen voor een Power BI-dataset met volgende prioriteit:
+# 1. direct opgegeven target_tables in de Power BI-YAML
+# 2. target_datasets uit de Power BI-YAML, vertaald via de Platinum-YAML
+def resolve_source_table_fqns(dataset_name: str) -> list[str]:
 	mapping = power_bi_map.get(normalize_key(dataset_name))
-	
 	if not mapping:
-	return []
+		return []
 	
-	# Gebruik directe target_tables wanneer deze expliciet aanwezig zijn.
+# Gebruik directe target_tables wanneer deze expliciet aanwezig zijn.
 	direct_tables = mapping.get("target_tables", [])
 	if direct_tables:
-	return unique_preserve_order(direct_tables)
+		return unique_preserve_order(direct_tables)
 	
-	# Gebruik anders target_datasets en vertaal die naar tabel-FQNs.
+# Gebruik anders target_datasets en vertaal die naar tabel-FQNs.
 	resolved = []
 	for target_dataset in mapping.get("target_datasets", []):
-	resolved.extend(platinum_map.get(normalize_key(target_dataset), []))
-	
+		resolved.extend(platinum_map.get(normalize_key(target_dataset), []))
 	return unique_preserve_order(resolved)
-	
-	
-	def get_table_by_fqn(fqn: str):
-	"""Haal een tabel op via haar fully qualified name."""
+
+# Functie om een tabel op te halen via de fully-qualified name
+def get_table_by_fqn(fqn: str):
 	try:
-	return Tables.retrieve_by_name(fqn)
+		return Tables.retrieve_by_name(fqn)
 	except Exception:
-	return None
-	
-	
-	print(f"PowerBI mappings geladen: {len(power_bi_map)}")
-	print(f"Platinum mappings geladen: {len(platinum_map)}")
-\end{minted}
+		return None
+\end{lstlisting}
 
 \paragraph{Aanmaken van dashboards}
 
-Dit codefragment zet de ingelezen Power BI-rapporten om naar dashboard-entiteiten in OpenMetadata. Daarbij wordt eerst gecontroleerd of een dashboard reeds bestaat op basis van het rapport-ID of de URL, zodat dubbele creatie vermeden wordt. Indien nog geen overeenkomstig dashboard aanwezig is, wordt een nieuwe dashboard-entiteit aangemaakt en worden de relevante identificatoren en resultaten bijgehouden voor verdere verwerking.\\
+Vervolgens worden de ingelezen Power BI-rapporten omgezet naar dashboard-entiteiten in OpenMetadata. Daarbij wordt eerst gecontroleerd of een dashboard reeds bestaat op basis van het rapport-ID of de URL, zodat dubbele creatie vermeden wordt. Indien nog geen overeenkomstig dashboard aanwezig is, wordt een nieuwe dashboard-entiteit aangemaakt en worden de relevante identificatoren en resultaten bijgehouden voor verdere verwerking. Het is mogelijk dat verschillende rapporten verwijzen naar dezelfde Power BI-URL, dus de optie \texttt{CREATE\_IF\_WEB\_URL\_NOT\_EXISTS} staat idealiter op \texttt{False}. Hierdoor wordt voor elk rapport met een uniek id een dashboard gemaakt.\\
 
-\begin{minted}[label={dashboards-maken}]{python}
-    # Bepaal hoe bestaande dashboards gedetecteerd worden:
-    # False = controle op basis van RapportID
-    # True  = controle op basis van WebUrl
-    CREATE_IF_WEB_URL_NOT_EXISTS = False
-	
-	
-	def to_plain_str(value) -> str:
-	"""Zet SDK-objecten of wrappers om naar een gewone string."""
-	return str(getattr(value, "root", value) or "")
-	
-	
-	def normalize_url(url: str) -> str:
-	"""Normaliseer een URL voor robuuste vergelijking."""
-	return (url or "").strip().rstrip("/").lower()
-	
-	
-	def extract_report_id(url: str) -> str:
-	"""Extraheer, indien aanwezig, het rapport-ID uit een Power BI-URL."""
-	match = re.search(r"reports/([0-9a-fA-F-]{36})", url or "")
-	return match.group(1).lower() if match else ""
-	
-	
-	# Indexeer bestaande dashboards om duplicaten te vermijden.
-	existing_by_url = {}
-	existing_by_report_id = {}
-	
-	for dashboard in Dashboards.list_all():
+In onderstaande code worden de bestaande dashboards op OpenMetadata opgehaald en bijgehouden op URL en id. Deze worden later gebruikt om na te kijken of al dan niet een dashboard is aangemaakt voor een rapport, om dubbels te voorkomen.
+
+\begin{lstlisting}[language=python, caption={Opzoeken bestaande dashboards}, label={lst:dashboards-indexeren}]
+# Bepaal hoe bestaande dashboards gedetecteerd worden:
+# False = controle op basis van RapportID
+# True = controle op basis van WebUrl
+CREATE_IF_WEB_URL_NOT_EXISTS = False
+
+# (Hier staan enkele hulpfuncties)
+
+# Indexeer bestaande dashboards om duplicaten te vermijden.
+existing_by_url = {}
+existing_by_report_id = {}
+
+for dashboard in Dashboards.list_all():
 	dashboard_url = normalize_url(to_plain_str(getattr(dashboard, "sourceUrl", "")))
 	dashboard_report_id = extract_report_id(dashboard_url)
-	
-	if dashboard_url and dashboard_url not in existing_by_url:
+
+if dashboard_url and dashboard_url not in existing_by_url:
 	existing_by_url[dashboard_url] = dashboard
-	
-	if dashboard_report_id and dashboard_report_id not in existing_by_report_id:
+
+if dashboard_report_id and dashboard_report_id not in existing_by_report_id:
 	existing_by_report_id[dashboard_report_id] = dashboard
-	
-	
-	dashboard_results = []
-	created_by_url = {}
-	created_by_report_id = {}
-	
-	# Doorloop alle rapporten uit de CSV.
-	for _, row in df.iterrows():
+\end{lstlisting}
+
+Vervolgens wordt er voor elk rapport uit de bronbestanden een dashboard-entiteit aangemaakt via de OpenMetadata-SDK. Het is belangrijk hierbij op te merken dat deze entiteit in OpenMetadata dient als een metadatarepresentatie of een proxy en niet het werkelijke dashboard bevat. De entiteit krijgt standaard de naam van het bijbehorende Power BI-rapport. Door bij de creatie aanvullende parameters zoals een omschrijving en de \texttt{sourceUrl} mee te geven, wordt de traceerbaarheid vergroot en kan een gebruiker vanuit de OpenMetadata-interface direct navigeren naar het effectieve rapport in de Power BI-service. Ten slotte wordt ook een dataframe opgebouwd en weergegeven zodat zichtbaar is welke dashboards aangemaakt of overgeslagen zijn; deze code is hier weggelaten.\\
+
+\begin{lstlisting}[language=python, caption={Dashboards maken en posten naar OpenMetadata}, label={lst:dashboards-aanmaken}]
+# Alle rapporten van de Power BI REST API worden doorlopen
+for _, row in df.iterrows():
 	rapport_naam = str(row["RapportNaam"]).strip()
 	web_url = str(row["WebUrl"]).strip()
 	dataset_naam = str(row["DatasetNaam"]).strip()
 	rapport_id = str(row["RapportID"]).strip()
 	dataset_id = str(row["DatasetID"]).strip()
-	
-	# Zoek de gekoppelde bron-tabellen op via de YAML-resolver.
+
+# Zoek de gekoppelde brontabellen op via de YAML-resolver
 	source_fqns = resolve_source_table_fqns(dataset_naam)
-	
+
 	normalized_url = normalize_url(web_url)
 	normalized_report_id = rapport_id.lower()
-	
 	existing_dashboard = None
-	
-	# Kies de gewenste controlelogica voor reeds bestaande dashboards.
+
+# Kies de gewenste controlelogica voor reeds bestaande dashboards
 	if CREATE_IF_WEB_URL_NOT_EXISTS:
-	existing_dashboard = (
-	created_by_url.get(normalized_url)
-	or existing_by_url.get(normalized_url)
-	)
-	check_mode = "WebUrl"
+		existing_dashboard = (created_by_url.get(normalized_url) or existing_by_url.get(normalized_url))
+		check_mode = "WebUrl"
 	else:
-	existing_dashboard = (
-	created_by_report_id.get(normalized_report_id)
-	or existing_by_report_id.get(normalized_report_id)
-	)
+		existing_dashboard = (created_by_report_id.get(normalized_report_id) or existing_by_report_id.get(normalized_report_id))
 	check_mode = "RapportID"
-	
-	# Gebruik een bestaand dashboard wanneer dat al aanwezig is.
+
+# Gebruik een bestaand dashboard wanneer dat al aanwezig is
 	if existing_dashboard is not None:
-	dashboard_id = existing_dashboard.id
-	dashboard_fqn = to_plain_str(existing_dashboard.fullyQualifiedName)
-	dashboard_status = f"existing ({check_mode} al aanwezig)"
+		dashboard_id = existing_dashboard.id
+		dashboard_fqn = to_plain_str(existing_dashboard.fullyQualifiedName)
+		dashboard_status = f"existing ({check_mode} al aanwezig)"
+# Maak anders een nieuwe dashboardentiteit aan
 	else:
-	# Maak anders een nieuw dashboard aan in OpenMetadata.
 	request = CreateDashboardRequest(
-	name=rapport_naam,
-	displayName=rapport_naam,
-	service=DASHBOARD_SERVICE,
-	description=f"Dashboard aangemaakt vanuit CSV voor dataset {dataset_naam}.",
-	sourceUrl=web_url,
-	)
-	
+		name=rapport_naam,
+		displayName=rapport_naam,
+		service=DASHBOARD_SERVICE,
+		description=f"Dashboard aangemaakt vanuit CSV voor dataset {dataset_naam}.",
+		sourceUrl=web_url,)
+
 	try:
-	dashboard = Dashboards.create(request)
-	dashboard_id = dashboard.id
-	dashboard_fqn = to_plain_str(dashboard.fullyQualifiedName)
-	dashboard_status = "created"
-	
-	created_by_url[normalized_url] = dashboard
-	if normalized_report_id:
-	created_by_report_id[normalized_report_id] = dashboard
+		dashboard = Dashboards.create(request)
+		dashboard_id = dashboard.id
+		dashboard_fqn = to_plain_str(dashboard.fullyQualifiedName)
+		dashboard_status = "created"
+
+		created_by_url[normalized_url] = dashboard
+		if normalized_report_id:
+			created_by_report_id[normalized_report_id] = dashboard
 	except Exception as exc:
-	dashboard_id = None
-	dashboard_fqn = None
-	dashboard_status = f"error: {exc}"
-	
-	dashboard_results.append(
-	{
-		"RapportNaam": rapport_naam,
-		"WebUrl": web_url,
-		"DatasetNaam": dataset_naam,
-		"RapportID": rapport_id,
-		"DatasetID": dataset_id,
-		"mapped_source_fqns": source_fqns,
-		"dashboard_status": dashboard_status,
-		"dashboard_fqn": dashboard_fqn,
-		"dashboard_id": dashboard_id,
-	}
-	)
-	
-	dashboards_df = pd.DataFrame(dashboard_results)
-	display(dashboards_df)
-	
-	print("Dashboard-overzicht:")
-	print(dashboards_df["dashboard_status"].value_counts(dropna=False))
-	print("CREATE_IF_WEB_URL_NOT_EXISTS =", CREATE_IF_WEB_URL_NOT_EXISTS)
-\end{minted}
+		dashboard_id = None
+		dashboard_fqn = None
+		dashboard_status = f"error: {exc}"
+\end{lstlisting}
 
 \paragraph{Aanleggen van lineage-edges}
 
-In dit laatste codefragment worden de lineage-relaties tussen de gevonden brontabellen en de aangemaakte dashboards toegevoegd. Voor elke gekoppelde tabel wordt nagegaan of de entiteit bestaat en of dezelfde relatie nog niet eerder werd aangemaakt, zodat dubbele lineage-edges vermeden worden. Het resultaat is een expliciete representatie van welke databronnen een bepaald Power BI-rapport voeden binnen OpenMetadata.\\
+In dit laatste codefragment worden de lineage-relaties tussen de gevonden brontabellen en de aangemaakte dashboards toegevoegd. Voor elke gekoppelde tabel wordt nagegaan of de entiteit bestaat en of dezelfde relatie nog niet eerder werd aangemaakt, zodat dubbele lineage-edges vermeden worden. Het resultaat is een expliciete representatie van welke databronnen een bepaald Power BI-rapport voeden binnen OpenMetadata. De logging van deze code is opnieuw weggelaten; deze bouwt per verwerkt rapport een dataframe op met zowel de status van het aanmaken van het dashboard als de lineage-edge(s).\\
 
-\begin{minted}[label={lineage-aanleggen}]{python}
-    lineage_results = []
-	
-    # Vermijd dubbele lineage tussen exact dezelfde brontabel en hetzelfde dashboard.
-    seen_lineage_pairs = set()
-	
-	for _, row in dashboards_df.iterrows():
-	rapport_naam = row["RapportNaam"]
-	dataset_naam = row["DatasetNaam"]
-	rapport_id = row["RapportID"]
-	dataset_id = row["DatasetID"]
+\begin{lstlisting}[language=python, caption={Lineage aanleggen in OpenMetadata}, label={lst:lineage}]
+lineage_results = []
+
+for _, row in dashboards_df.iterrows():
+	RapportNaam = row["RapportNaam"]
+	DatasetNaam = row["DatasetNaam"]
+	RapportID = row["RapportID"]
+	DatasetID = row["DatasetID"]
+	WebUrl = row["WebUrl"]
 	source_fqns = row["mapped_source_fqns"] if isinstance(row["mapped_source_fqns"], list) else []
 	dashboard_status = row["dashboard_status"]
 	dashboard_fqn = row["dashboard_fqn"]
@@ -509,79 +392,38 @@ In dit laatste codefragment worden de lineage-relaties tussen de gevonden bronta
 	table_statuses = []
 	created_count = 0
 	
-	# Voeg lineage enkel toe wanneer zowel dashboard als bron-tabellen beschikbaar zijn.
 	if has_dashboard and source_fqns:
-	for source_fqn in source_fqns:
-	source_table = get_table_by_fqn(source_fqn)
+		for source_fqn in source_fqns:
+			source_table = get_table_by_fqn(source_fqn)
+			if not source_table:
+				table_statuses.append(f"skipped:not_found:{source_fqn}")
+				continue
 	
-	if not source_table:
-	table_statuses.append(f"skipped:not_found:{source_fqn}")
-	continue
-	
-	pair_key = f"{source_table.id}-{dashboard_id}"
-	
-	if pair_key in seen_lineage_pairs:
-	table_statuses.append(f"skipped:duplicate_pair:{source_fqn}")
-	continue
-	
-	try:
-	request = AddLineageRequest(
-	edge=EntitiesEdge(
-	description=f"{dataset_naam} voedt Power BI-rapport {rapport_naam}.",
-	fromEntity=EntityReference(id=source_table.id, type="table"),
-	toEntity=EntityReference(id=dashboard_id, type="dashboard"),
-	lineageDetails=LineageDetails(
-	source="Manual",
-	description="Automatisch toegevoegd via notebook op basis van YAML mappings.",
-	),
-	)
-	)
-	
-	metadata.add_lineage_data(request)
-	seen_lineage_pairs.add(pair_key)
-	created_count += 1
-	table_statuses.append(f"created:{source_fqn}")
-	
-	except Exception as exc:
-	table_statuses.append(f"error:{source_fqn}:{exc}")
-	
-	if created_count:
-	lineage_status = f"created {created_count}/{len(source_fqns)}"
-	else:
-	lineage_status = "skipped:geen lineage aangemaakt"
-	
-	elif has_dashboard and not source_fqns:
-	lineage_status = f"skipped: geen mappingtabellen voor dataset {dataset_naam}"
-	elif not has_dashboard:
-	lineage_status = "skipped: dashboard niet aangemaakt"
-	else:
-	lineage_status = "skipped"
-	
-	lineage_results.append(
-	{
-		"RapportNaam": rapport_naam,
-		"DatasetNaam": dataset_naam,
-		"RapportID": rapport_id,
-		"DatasetID": dataset_id,
-		"mapped_source_fqns": ", ".join(source_fqns),
-		"dashboard_status": dashboard_status,
-		"dashboard_fqn": dashboard_fqn,
-		"lineage_status": lineage_status,
-		"table_statuses": ", ".join(table_statuses),
-	}
-	)
-	
-	results_df = pd.DataFrame(lineage_results)
-	display(results_df)
-	
-	print("Klaar. Overzicht:")
-	print(results_df["dashboard_status"].value_counts(dropna=False))
-	print(results_df["lineage_status"].value_counts(dropna=False))
-\end{minted}
+			pair_key = f"{source_table.id}->{dashboard_id}"
+			if pair_key in seen_lineage_pairs:
+				table_statuses.append(f"skipped:duplicate_pair:{source_fqn}")
+				continue
+			try:
+				req = AddLineageRequest(
+					edge=EntitiesEdge(
+						description=f"{DatasetNaam} voedt Power BI-rapport '{RapportNaam}'",
+						fromEntity=EntityReference(id=source_table.id, type="table"),
+						toEntity=EntityReference(id=dashboard_id, type="dashboard"),
+						lineageDetails=LineageDetails(
+							source="Manual",
+							description="Automatisch toegevoegd via notebook op basis van YAML-mappings")))
+				metadata.add_lineage(data=req)
+				seen_lineage_pairs.add(pair_key)
+				created_count += 1
+				table_statuses.append(f"created:{source_fqn}")
+			except Exception as exc:
+				table_statuses.append(f"error:{source_fqn}:{exc}")
+# (hier worden lineage_results en logging opgebouwd)
+\end{lstlisting}
 
 \subsection{Lineage voor composite-modellen}
 
-In gevallen waar een Power BI-model meerdere platinum-datasets combineert, maakt de PoC gebruik van de \texttt{confirmed\_multi}-status. De mapping-output bevat dan meerdere platinum-datasets in de kolom \texttt{platinum\_datasets}, en de lineage-logica genereert voor elk van deze datasets een separate edge richting hetzelfde dashboard. Hierdoor wordt zichtbaar dat een rapport afhankelijk is van meer dan één dataset in de platinum-laag, wat belangrijk is voor impactanalyses: een wijziging in één van de onderliggende datasets kan potentieel invloed hebben op het volledige rapport.\\
+In gevallen waar een Power BI-model meerdere platinum-datasets combineert, maakt de PoC gebruik van de \texttt{confirmed\_multi}-status. De mapping-output bevat dan meerdere platinum-datasets in de kolom \texttt{platinum\_datasets}, en de lineage-logica genereert voor elk van deze datasets een aparte edge richting hetzelfde dashboard. Hierdoor wordt zichtbaar dat een rapport afhankelijk is van meer dan één dataset in de platinum-laag, wat belangrijk is voor impactanalyses: een wijziging in één van de onderliggende datasets kan potentieel invloed hebben op het volledige rapport.\\
 
 De Krissteunster-Steunster-case is hiervan een concreet voorbeeld. De composite Power BI-dataset wordt gekoppeld aan zowel een \texttt{krissteunster}- als een \texttt{steunster}-platinumdataset, zodat analisten in OpenMetadata onmiddellijk zien dat wijzigingen in één van beide datasets impact kunnen hebben op dezelfde rapportage.\\
 
@@ -589,28 +431,34 @@ De Krissteunster-Steunster-case is hiervan een concreet voorbeeld. De composite 
 
 Tijdens de iteratieve ontwikkeling van de PoC is het noodzakelijk om dashboards en lineage-edges regelmatig opnieuw te creëren en te verwijderen. Hiervoor wordt de notebook \texttt{cleanup\_steunster\_lineage\_dashboards.ipynb} gebruikt.\\
 
-In deze notebook worden de aangemaakte dashboards op basis van naam of id opgezocht. Omdat naamnormalisatie soms leidt tot ambiguïteit, wordt de delete-operatie bij voorkeur uitgevoerd op basis van de unieke id die in OpenMetadata aan elk dashboard verbonden is. De notebook verwijdert vervolgens zowel de dashboard-entities als de bijhorende lineage-edges, zodat er geen verouderde of dubbele relaties in de metadata achterblijven.\\
+In deze notebook worden de aangemaakte dashboards op basis van naam of id opgezocht. Omdat naamnormalisatie soms leidt tot ambiguïteit, wordt de delete-operatie bij voorkeur uitgevoerd op basis van de unieke id die in OpenMetadata aan elk dashboard verbonden is. De notebook verwijdert vervolgens zowel de dashboard-entiteiten als de bijhorende lineage-edges, zodat er geen verouderde of dubbele relaties in de metadata achterblijven.\\
 
 Praktisch kwamen tijdens het testen enkele terugkerende aandachtspunten naar voren:
 \begin{itemize}
-	\item JWT-tokens vervallen regelmatig tijdens langere sessies in de notebookomgeving. In dat geval wordt de kernel herstart en de configuratiecel opnieuw uitgevoerd, zodat de client opnieuw met een geldig token werkt;
-	\item de scripts en notebooks zijn gevoelig voor bestandslocaties. Sommige flows verwachten CSV's in een \texttt{Datasets}-submap, andere in de root van de repository. In de documentatie wordt daarom expliciet vermeld welke paden voor welke notebook gebruikt worden, om reproductieproblemen te voorkomen.
+	\item JWT-tokens vervallen regelmatig tijdens langere sessies in de notebookomgeving. In dat geval moet de kernel herstart worden en de configuratiecel opnieuw uitgevoerd worden, zodat de client opnieuw met een geldig token kan werken.
+	\item De scripts en notebooks zijn gevoelig voor bestandslocaties. Sommige flows verwachten CSV's in een \texttt{Datasets}-submap, andere in de root van de repository. In de documentatie wordt daarom expliciet vermeld welke paden voor welke notebook gebruikt worden, om reproductieproblemen te voorkomen.
 \end{itemize}
 
 \section{Beperkingen en randvoorwaarden}
 
 De beschreven implementatie is bewust opgezet als proof-of-concept en kent een aantal belangrijke beperkingen die van invloed zijn op de interpretatie van de resultaten.\\
 
-Ten eerste is de mappinglogica volledig naamgebaseerd. Hoewel de gebruikte heuristieken (exacte, deelstring-, token- en fuzzy-matching) in veel gevallen goede resultaten opleveren, blijft de betrouwbaarheid afhankelijk van consistente en informatieve naamgeving aan zowel Power BI- als Databricks-zijde. Datasets met zeer generieke of sterk afwijkende namen blijven \texttt{unmatched} en vallen buiten de scope van de huidige PoC. Een bijkomend gevolg van het ontbreken van een bruikbare Power BI-connector is dat de PoC voor zijn mappings volledig steunt op exports uit de Power BI REST API en de daaruit afgeleide CSV-bestanden. In de huidige implementatie worden alle unieke Power BI-datasets uit deze exports opgenomen in de mapping-flow en vergeleken met de lijst van platinum-datasets. Voor de datasets die vandaag in scope zijn, levert dit in combinatie met de gehanteerde heuristieken een set mappings op die in de praktijk nagenoeg volledig correct is.\\
+\subsection{Beperkingen van de naamgebaseerde mapping}
 
-In de huidige opzet vormen de gegenereerde YAML-mappings het belangrijkste resultaat voor VLAIO: zij leggen vast welke Power BI-datasets aan welke platinum-tabellen gekoppeld worden en worden rechtstreeks gebruikt in de end-to-end-workflows. De Python-scripts voor mapping zijn in de eerste plaats onderzoeks- en ondersteunende tooling om deze YAML sneller en consistenter op te bouwen. VLAIO kan er in de toekomst voor kiezen om deze scripts al dan niet opnieuw uit te voeren (bijvoorbeeld bij grote herstructureringen), maar is daartoe niet verplicht: het is even goed mogelijk om de YAML zelf gericht bij te werken op basis van nieuwe of gewijzigde rapporten. In de meest recente versie van de YAML-workflows dekken de gegenereerde mappings vrijwel alle relevante rapporten binnen de PoC-scope. Om deze workflows in de toekomst correct te laten blijven werken, is het wel noodzakelijk dat nieuwe of aangepaste Power BI-datasets een naam krijgen die inhoudelijk aansluit bij de corresponderende platinum-dataset. Wanneer datasetnamen sterk afwijken of generiek geformuleerd zijn, neemt de kans toe dat ze niet automatisch gematcht worden en manuele aanvulling of bijsturing van de mapping nodig is.\\
+Ten eerste is de mappinglogica volledig naamgebaseerd. Hoewel de gebruikte heuristieken in veel gevallen goede resultaten opleveren, blijft de betrouwbaarheid afhankelijk van consistente en informatieve naamgeving aan zowel Power BI- als Databricks-zijde. Datasets met zeer generieke of sterk afwijkende namen blijven \texttt{unmatched} en vallen buiten de scope van de huidige PoC. Een bijkomend gevolg van het ontbreken van een bruikbare Power BI-connector is dat de PoC voor zijn mappings volledig steunt op de Power BI-REST-API metadata in Databricks en de daaruit afgeleide data. In de huidige implementatie worden alle unieke Power BI-datasets uit deze exports opgenomen in de mapping-flow en vergeleken met de lijst van platinum-datasets. Voor de datasets die vandaag in scope zijn, levert dit in combinatie met de gebruikte naamgebasseerde regels een set mappings op die in de praktijk nagenoeg volledig correct is.\\
+
+\subsection{Rol en onderhoud van de YAML-mappings}
+
+In de huidige opzet vormen de gegenereerde YAML-mappings het belangrijkste resultaat voor VLAIO: zij leggen vast welke Power BI-datasets aan welke platinum-tabellen gekoppeld worden en worden rechtstreeks gebruikt in de end-to-end-workflows. De Python-scripts voor mapping zijn in de eerste plaats onderzoeks- en ondersteunende tooling om deze YAML sneller en consistenter op te bouwen. VLAIO kan er in de toekomst voor kiezen om deze scripts al dan niet opnieuw uit te gebruiken, maar het is even goed mogelijk om de YAML zelf gericht bij te werken op basis van nieuwe of gewijzigde rapporten. In de meest recente versie van de YAML-workflows dekken de gegenereerde mappings vrijwel alle relevante rapporten binnen de PoC-scope. Om deze workflows in de toekomst correct te laten blijven werken, is het wel noodzakelijk dat nieuwe of aangepaste Power BI-datasets een naam krijgen die inhoudelijk aansluit bij de corresponderende platinum-dataset. Wanneer datasetnamen sterk afwijken of generiek geformuleerd zijn, neemt de kans toe dat ze niet automatisch gematcht worden en manuele aanvulling of bijsturing van de mapping nodig is.\\
+
+\subsection{Beperkingen van lineage op kolomniveau}
 
 Ten tweede is de lineage in deze PoC bewust beperkt tot tabelniveau. Tijdens een bijkomende sync-meeting met de betrokken data-engineers en BI-ontwikkelaars werd bevestigd dat kolomniveau-lineage richting Power BI-rapporten in de huidige VLAIO-context niet op een betrouwbare en onderhoudbare manier kan worden uitgewerkt. OpenMetadata toont wel de queries die in Databricks worden uitgevoerd, maar maakt niet duidelijk welk systeem of rapport een bepaalde query heeft getriggerd, zodat niet eenduidig kan worden afgeleid of een query afkomstig is van Power BI, een Databricks-gebruiker of een intern proces. Daardoor is automatische kolomlineage richting een specifiek Power BI-rapport vandaag niet haalbaar op schaal.
 
 Een manuele oplossing, bijvoorbeeld via Python-code die de OpenMetadata-API aanstuurt om per rapport kolomlineage in te vullen, werd in de meeting expliciet als weinig realistisch beoordeeld. Per rapport zouden dan aparte mappings tussen kolommen en queries onderhouden moeten worden, met een groot risico op fouten, verouderde mappings en een vorm van “maintenance hell”. Ook werd aangehaald dat zelfs waar SQL-queries beschikbaar zijn, deze niet altijd fijnmazig genoeg zijn om betrouwbare kolomlinks te leggen: vaak wordt op datasetniveau gewerkt, terwijl gebruikte kolommen in werkelijkheid uit specifieke dimensie- of facttabellen komen. Zonder bijkomende, fijnmazige metadata uit Power BI zelf blijft kolomniveau-lineage daarom te fragiel om als generieke oplossing te dienen.
 
-Om die redenen werd in overleg besloten om kolomniveau-lineage buiten de scope van deze bachelorproef te houden en te focussen op een robuuste lineage op tabelniveau, waarin zichtbaar wordt welke platinum-tabellen de belangrijkste bron vormen voor een rapport. Meer gedetailleerde of manuele verrijking kan in de toekomst eventueel case per case worden toegepast voor een beperkt aantal kritieke rapporten, maar wordt niet als algemene aanpak beschouwd.
+Om die redenen werd in overleg besloten om kolomniveau-lineage buiten de scope van deze bachelorproef te houden en te focussen op een robuuste lineage op tabelniveau, waarin zichtbaar wordt welke platinum-tabellen de belangrijkste bron vormen voor een rapport. Meer gedetailleerde of manuele verrijking kan in de toekomst eventueel case per case worden toegepast voor een beperkt aantal kritieke rapporten, maar wordt niet als algemene aanpak beschouwd.\\
 
-Daarnaast dekt de huidige end-to-end implementatie slechts een deel van het VLAIO-rapportagelandschap. De generieke mappinggenerator wordt wel toegepast op de volledige lijst van Power BI-datasets uit de export en levert voor een aanzienlijk deel daarvan betrouwbare \texttt{confirmed}-mappings naar platinum-datasets op. In de notebooks en YAML-workflows wordt de flow van mapping naar dashboardcreatie en lineage-opbouw echter alleen volledig uitgevoerd voor een geselecteerde subset van rapporten, met de Steunster/Krissteunster-case als belangrijkste voorbeeld. De resultaten van de gebruikers-evaluatie in latere hoofdstukken moeten dan ook gelezen worden als indicaties binnen deze PoC-scope, en niet als bewijs dat het volledige landschap vandaag al end-to-end in OpenMetadata is doorgetrokken.\\
+\subsection{Scope van de implementatie}
 
-Tot slot is het belangrijk om te benadrukken dat de PoC niet enkel technische effecten heeft. Door de systematische mapping en het centraliseren van afhankelijkheidsinformatie wordt impliciete kennis van individuele medewerkers explicieter gemaakt en gedeeld. Een deel van de ervaren verbeteringen in transparantie en herleidbaarheid kan dus voortkomen uit dit documentatie-effect, en niet uitsluitend uit de inzet van OpenMetadata als tool. In de evaluatiehoofdstukken wordt hiermee expliciet rekening gehouden bij de interpretatie van gebruikersfeedback en waargenomen meerwaarde.\\
+Tot slot dekt de huidige end-to-endimplementatie slechts een deel van het VLAIO-rapportagelandschap. De generieke mappinggenerator wordt wel toegepast op de volledige lijst van Power BI-datasets uit de export en levert voor een aanzienlijk deel daarvan betrouwbare \texttt{confirmed}-mappings naar platinum-datasets op. In de notebooks en YAML-workflows wordt de flow van mapping naar dashboardcreatie en lineage-opbouw echter alleen volledig uitgevoerd voor een geselecteerde subset van rapporten, met de Steunster/Krissteunster-case als belangrijkste voorbeeld. De resultaten van de gebruikersevaluatie in latere hoofdstukken moeten dan ook gelezen worden als indicaties binnen deze PoC-scope, en niet als bewijs dat het volledige landschap vandaag al end-to-end in OpenMetadata is doorgetrokken.\\
