@@ -61,7 +61,7 @@ Binnen OpenMetadata was de platinum laag al aanwezig door de koppeling met Datab
 
 \paragraph{Afleiding van Power BI-rapporten uit Databricks.}
 
-Omdat OpenMetadata in de huidige VLAIO-omgeving niet rechtstreeks kan verbinden met de Power BI REST API, werd gebruikgemaakt van de afgeleide Power BI-metadata die reeds onder vele tabellen in Databricks beschikbaar is (onder meer \texttt{powerbirestapi\_report} en \texttt{powerbirestapi\_dataset}). Deze tabellen waren niet vooraf gedocumenteerd voor het doel van lineage, waardoor eerst manueel onderzocht moest worden welke combinaties van kolommen en joins nodig waren om een bruikbaar overzicht van rapporten en bijbehorende datasets op te bouwen. Na het verkennen van de relevante tabellen werd onderstaande query opgesteld als basis om alle rapporten met hun datasetnaam te extraheren:
+Omdat OpenMetadata in de huidige VLAIO-omgeving niet rechtstreeks kan verbinden met de Power BI REST API, werd gebruikgemaakt van de afgeleide Power BI-metadata die reeds onder vele tabellen in Databricks beschikbaar is. Deze tabellen waren niet vooraf gedocumenteerd voor het doel van lineage, waardoor eerst manueel onderzocht moest worden welke combinaties van kolommen en joins nodig waren om een bruikbaar overzicht van rapporten en bijbehorende datasets op te bouwen. Na het verkennen van de relevante tabellen werd onderstaande query opgesteld als basis om alle rapporten met hun datasetnaam te extraheren. Hiermee was de nodige metadata aanwezig om de dash\-board-en\-ti\-tei\-ten aan te maken en deze nadien te koppelen aan de bron tabel uit de platinum laag.
 
 \begin{lstlisting}[language=SQL, caption={Query om Power BI-rapporten en -datasets te selecteren uit Databricks}, label={lst:powerbirest-query}]
 	SELECT
@@ -80,32 +80,33 @@ De kolom \texttt{RapportOmschrijving} werd hier bewust niet gebruikt, omdat deze
 
 In de oorspronkelijke versie van de query werd gefilterd op \texttt{DatasetNaam = 'VLAIO Steunster'} om de eerste experimenten te focussen op één concrete dataset. In de huidige implementatie is deze filter verwijderd. Alle rapporten worden opgehaald en vervolgens gefilterd op basis van de YAML-mappings, zodat de pipeline generiek werkt voor alle mappeerbare datasets.\\
 
-
 \section{Mapping van Power BI-datasets naar platinum-datasets}
 
 \subsection{Algemene mappingstrategie}
 
-De kern van de PoC is een generieke mappinglaag die Power BI-datasetnamen koppelt aan de onderliggende platinum-datasets. Deze mapping gebeurt niet via handmatig ingevulde lijsten, maar via een set heuristieken die de namen in beide domeinen op verschillende manieren met elkaar vergelijkt. De implementatie is opgesplitst in twee scripts:
+In de beschikbare metadata is per rapport een veld \texttt{Datasetnaam} aanwezig, naast een lijst van alle platinum-datasets. Om lineage te kunnen opbouwen, moet er een koppeling worden gemaakt tussen deze twee. Dit brengt echter enkele uitdagingen met zich mee. Niet elk rapport is gebaseerd op een platinum-dataset, zo steunen sommige bijvoorbeeld op Excel-bestanden of andere bronnen. Bovendien komen de veldwaarden zelden exact overeen met de datasetnamen, waardoor deze niet direct kunnen gebruikt worden om lineage te creëren. De kern van de PoC is dus een generieke mappinglaag, die het veld \texttt{Datasetnaam} gebruikt om voor elk rapport een koppeling te maken met de onderliggende platinum-dataset. Deze mapping gebeurt niet via handmatig ingevulde lijsten, maar via een set heuristieken die de namen in beide domeinen op verschillende manieren met elkaar vergelijkt. De implementatie maakt gebruik van het volgende script voor het genereren van de mappings:
 \begin{itemize}
-	\item \texttt{\_build\_mapping.py}: bouwt een basis-mapping tussen de volledige lijst van Power BI-datasets en de platinum-datasetlijst
-	\item \texttt{\_build\_mapping\_strict.py}: verfijnt de mapping en filtert op de meest betrouwbare matches
+	\item \texttt{\_build\_mapping.py}: dit script bouwt de mapping tussen de volledige lijst van Power BI-datasets en de platinum-datasets. Dit script genereert twee vercshillende outputs:
+	\begin{itemize}
+		\item \textbf{Confirmed mapping:} bevat de meest betrouwbare, automatisch goedgekeurde matches op basis van de gedefinieerde logica.
+		\item \textbf{Review mapping:} verzamelt alle datasets en rapporten die niet gematcht konden worden, zodat deze handmatig gecontroleerd of aangevuld kunnen worden.
+	\end{itemize}
 \end{itemize}
 
-De scripts voeren eerst een normalisatie van namen uit (bijvoorbeeld lowercasing, verwijderen van speciale tekens, hanteren van consistentie bij camelCase en enkele uitzonderingen en passen vervolgens verschillende heuristieken toe om mogelijke matches te scoren.\\
-
-In de context van deze bachelorproef wordt de mappinggenerator vooral gebruikt als hulpmiddel om een eerste, zo volledig mogelijke basisversie van de YAML configuratie voor Power BI--platinum-mapping op te bouwen en om manuele mappingarbeid te beperken. Het is niet de bedoeling dat deze scripts een-op-een als verplicht onderdeel van de toekomstige operationele processen bij VLAIO worden overgenomen, maar eerder dat ze aantonen hoe een naamgebaseerde aanpak kan helpen om een correct startpunt voor verdere verbetering te creeren.\\
+In de context van deze bachelorproef wordt deze mappinggenerator vooral gebruikt als hulpmiddel om een eerste, zo volledig mogelijke basisversie op te bouwen. Daarnaast zou door het grote aantal datasets een volledige manuele mapping namelijk zeer veel tijd innemen. Bovendien maakt dit de mapping ook reproduceerbaar. 
+Hoewel de gegenereerde output de basis vormt voor de uiteindelijke lineage-pipeline, maakt dit mapping script zelf geen deel uit van de uiteindelijke end-to-end workflow. Het diende vooral om aan te tonen hoe een naamgebaseerde aanpak kan helpen om snel een betrouwbaar startpunt te creëren.\\
 
 \subsection{Heuristieken en outputstructuur}
 
-De mappinglogica combineert verschillende naamgebaseerde vergelijkingsstrategieen, zoals exacte matching, deelstringvergelijkingen, fuzzy matching en token-gebaseerde vergelijkingen. Op basis van de gecombineerde scores worden potentiele koppelingen tussen Power BI- en platinum-datasets automatisch geclassificeerd naar betrouwbaarheid. De resultaten worden vervolgens weggeschreven naar aparte CSV-bestanden, zodat duidelijke matches rechtstreeks gebruikt kunnen worden en twijfelgevallen apart beschikbaar blijven voor eventuele manuele controle.\\
+De mapping scripts standaardiseren de namen eerst door hoofdletters, speciale tekens en afwijkende schrijfwijzen weg te werken. Daarna worden verschillende regels toegepast om mogelijke koppelingen te beoordelen. Hierbij worden verschillende naamgebaseerde vergelijkingsstrategieën gecombineerd, zoals exacte matching, deelstringvergelijkingen, fuzzy matching\footnote{Fuzzy matching vindt overeenkomsten tussen teksten die niet exact gelijk zijn, maar sterk op elkaar lijken.} en token-gebaseerde vergelijkingen\footnote{Bij token-gebaseerde vergelijking worden namen opgesplitst in afzonderlijke woorden of delen, waarna die "tokens" apart worden vergeleken.}. Deze genereren dan per gevonden match een score en op basis daarvan worden de potentiële koppelingen automatisch geclassificeerd naar betrouwbaarheid. De resultaten worden vervolgens weggeschreven naar aparte CSV-bestanden, zodat duidelijke matches rechtstreeks gebruikt kunnen worden en twijfelgevallen apart beschikbaar blijven voor een eventuele manuele controle.\\
 
-De mapping-output ondersteunt ook multi-mapping. Elke Power BI-dataset kan, indien nodig, aan meerdere platinum-datasets gekoppeld worden. De kolom \texttt{platinum\_datasets} bevat dan een lijst van kandidaten, en \texttt{match\_count} geeft het aantal matches aan. Dergelijke composite-situaties krijgen een aparte status, \texttt{confirmed\_multi}, zodat downstream-logica hiermee rekening kan houden. Een voorbeeld hiervan is \texttt{Krissteunster-Steunster Composite model} die gemapt moet worden naar zowel Steunster als Krissteunster.\\
+De mapping-output ondersteunt ook multi-mapping. Elke Power BI-dataset kan, indien nodig, aan meerdere platinum-datasets gekoppeld worden. De kolom \texttt{platinum\_datasets} bevat dan een lijst van kandidaten, en \texttt{match\_count} geeft het aantal matches aan. Dergelijke situaties krijgen een aparte status, \texttt{confirmed\_multi}, zodat downstream-logica hiermee rekening kan houden. Een voorbeeld hiervan is \texttt{Krissteunster-Steunster Composite model}. Dit is een samenstelling van twee platinum datasets, dat moet gemapt worden naar zowel Steunster als Krissteunster.\\
 
-In de meest recente run verwerkte de mappinggenerator 418 Power BI-datasets, waarvan 117 als \texttt{confirmed} en 4 als \texttt{confirmed\_multi} werden geclassificeerd. De overige 297 datasets bleven \texttt{unmatched}. Dat is niet noodzakelijk een tekortkoming van de mappinglogica: veel Power BI-datasets hebben geen directe of zinvolle tegenhanger in de platinum-laag en kunnen daarom normaal gezien niet gekoppeld worden. Deze niet-gematchte gevallen vragen wel een manuele controle om te onderscheiden tussen terecht niet-koppelbare datasets en uitzonderingen waarvoor de heuristieken nog verfijnd kunnen worden.\\
+In de meest recente run verwerkte de mappinggenerator 418 Power BI-datasets, waarvan 117 als \texttt{confirmed} en 4 als \texttt{confirmed\_multi} werden geclassificeerd. De overige 297 datasets bleven \texttt{unmatched}. Dat is niet noodzakelijk een tekortkoming van de mappinglogica. Veel Power BI-datasets hebben geen directe of zinvolle tegenhanger in de platinum-laag en kunnen daarom niet gekoppeld worden. Deze niet-gematchte gevallen vragen wel een manuele controle om te onderscheiden tussen terecht niet-koppelbare datasets en uitzonderingen waarvoor de naamgebasseerde regels nog verfijnd kunnen worden.\\
 
 \paragraph{Voorbeeld van mapping-output (CSV).}
 
-Onderstaand fragment illustreert hoe de output van het mappingscript eruitziet in \texttt{PowerBI\_to\_Platinum\_mapping\_confirmed.csv}. Hieruit blijkt dat de naam van een Power BI-dataset niet noodzakelijk exact hoeft overeen te komen met de naam van de bijhorende platinum-dataset om toch tot een correcte koppeling te komen. De gegenereerde mapping dient daarbij vooral als een eerste, reproduceerbare basis die manueel werk vermindert. Vooraleer deze mappings worden omgezet naar de YAML-configuratie die effectief gebruikt wordt voor het aanmaken van lineage, moeten ze uiteraard manueel nagekeken worden.
+Onderstaand fragment illustreert hoe de output van het mappingscript eruitziet in \texttt{PowerBI\_to\_Platinum\_mapping\_confirmed.csv}. Hier zie je dat de naam van een Power BI-dataset niet noodzakelijk exact hoeft overeen te komen met de naam van de bijhorende platinum-dataset, om toch een correcte koppeling te krijgen (zie bijvoorbeeld \textit{Heropstartlening}). Vooraleer deze mappings worden omgezet naar de YAML-configuratie die effectief gebruikt wordt voor het aanmaken van lineage, moeten ze uiteraard manueel nagekeken worden.\\
 
 \begin{table}[h]
 	\centering
@@ -133,6 +134,8 @@ Onderstaand fragment illustreert hoe de output van het mappingscript eruitziet i
 \end{table}
 
 \paragraph{Voorbeeld van Power BI-datasetmappings (YAML).}
+
+Na de handmatige controle en eventuele verbeteringen worden de definitieve koppelingen met het script \texttt{fill\_powerbi\_yaml\_from\_mappings.py} omgezet naar een configuratie in YAML. Er is bewust gekozen voor een YAML-structuur als centrale configuratielaag vanwege de goede leesbaarheid en de flexibiliteit die het biedt tijdens de ontwikkelfase. Het formaat maakt het voor zowel ontwikkelaars als niet-technische stakeholders eenvoudig om bestaande mappings in te zien, snel handmatige correcties door te voeren of nieuwe uitzonderingen toe te voegen zonder de overhead van bijvoorbeeld een database-migratie. Daarnaast biedt YAML de nodige granulariteit om, naast generieke dataset-mappings, ook specifiekere verfijningen toe te voegen.
 
 Dat laatste is bijvoorbeeld het geval in het onderstaande fragment voor \texttt{Epplus betalingen}. Deze Power BI-dataset wordt enerzijds nog steeds logisch gekoppeld aan de platinum-dataset \texttt{r\_epplus}, maar anderzijds wordt ook expliciet de tabel \texttt{epp\_betalingen} meegegeven. Hierdoor verwijst de lineage in dit geval niet naar alle fact- of brontabellen binnen \texttt{r\_epplus}, maar enkel naar de concrete tabel waarvoor voldoende zekerheid bestaat dat ze effectief in het rapport gebruikt wordt. De YAML-structuur laat dus zowel generieke mappings op datasetniveau als meer precieze mappings op tabelniveau toe, afhankelijk van de hoeveelheid beschikbare metadata.
 
@@ -166,18 +169,22 @@ Dat laatste is bijvoorbeeld het geval in het onderstaande fragment voor \texttt{
 
 Aangezien lineage in OpenMetadata volgens de gangbare aanpak op tabelniveau wordt vastgelegd, volstaat het niet om enkel een koppeling te maken tussen een Power BI-dataset en een logische platinum-dataset. Daarom werd aanvullend een manuele mapping opgesteld waarin per platinum-dataset wordt vastgelegd welke concrete tabellen als meest relevante bron voor de lineage beschouwd worden. Zoals eerder vermeld wordt daarbij in de eerste plaats gekozen voor facttabellen wanneer die beschikbaar zijn, en anders voor de belangrijkste tabellen binnen de betrokken dataset.\\
 
-In \texttt{Platinum\_Dataset\_Mappings.yml} worden de logische platinum-datasets verder vertaald naar een of meerdere technische tabel-FQN's in Databricks. Daarbij wordt bewust met fully qualified names (FQN's) gewerkt, omdat deze niet alleen eenduidig verwijzen naar de juiste tabel binnen de Databricks-omgeving, maar ook noodzakelijk zijn om de overeenkomstige tabelentiteiten correct op te zoeken en te gebruiken in OpenMetadata. Deze YAML-configuratie is makkelijk uitbreidbaar en aanpasbaar. Nieuwe datasets of bijkomende tabellen kunnen zonder aanpassing van de onderliggende scriptlogica worden toegevoegd, terwijl bestaande mappings ook eenvoudig verfijnd kunnen worden wanneer extra domeinkennis beschikbaar komt of de datamodellen wijzigen.
+In \texttt{Platinum\_Dataset\_Mappings.yml} worden de logische platinum-datasets verder vertaald naar een of meerdere specifieke tabellen. Om de herbruikbaarheid en omgevingsonafhankelijkheid van de pipeline te garanderen, worden in deze YAML-configuratie enkel de schema en tabelnamen (zoals \texttt{krissteunster.f\_steun}) opgenomen, in plaats van volledige, hardgecodeerde \textit{Fully Qualified Names} (FQN's).\\
+
+Verwijzingen naar specifieke database-omgevingen, zoals \texttt{lz02-d-dbw-ccdata-main.platinum\_dev} voor de ontwikkelomgeving, worden via de \texttt{.env} configuratie dynamisch ingelezen. De scriptlogica voegt deze omgevingsvariabelen vervolgens programmatisch samen met de tabelnaam uit de YAML om de uiteindelijke FQN op te bouwen. Deze resulterende FQN is noodzakelijk om de tabelentiteiten eenduidig te kunnen identificeren en correct te koppelen binnen OpenMetadata. Zo kunnen deze gewijzigd worden buiten de logica zelf. Deze aanpak zorgt ervoor dat de code en de configuratie ongewijzigd kunnen functioneren in zowel de dev, test als productie-omgeving.\\
+
+De YAML-opzet blijft hierdoor bovendien makkelijk uitbreidbaar en aanpasbaar. Nieuwe datasets of bijkomende tabellen kunnen zonder aanpassing van de code worden toegevoegd, terwijl bestaande mappings eenvoudig verfijnd kunnen worden wanneer extra domeinkennis beschikbaar komt of de datamodellen wijzigen.\\
 
 \begin{lstlisting}[language=YAML, caption={Fragment uit Platinum\_Dataset\_Mappings.yml}, label={lst:yaml-platinum}]
 	- dataset: krissteunster
-	  target_tables:
-		- lz02-d-dbw-ccdata-main.platinum_dev.krissteunster.f_steun
-		- lz02-d-dbw-ccdata-main.platinum_dev.krissteunster.f_steunster
-		- lz02-d-dbw-ccdata-main.platinum_dev.krissteunster.f_steunster_toegevoegdewaarde
+	target_tables:
+	- krissteunster.f_steun
+	- krissteunster.f_steunster
+	- krissteunster.f_steunster_toegevoegdewaarde
 	
 	- dataset: steunster
-	  target_tables:
-		- lz02-d-dbw-ccdata-main.platinum_dev.steunster.f_steun
+	target_tables:
+	- steunster.f_steun
 \end{lstlisting}
 
 
