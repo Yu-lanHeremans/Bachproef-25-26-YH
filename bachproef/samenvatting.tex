@@ -36,7 +36,6 @@
 \IfLanguageName{english}{%
 \selectlanguage{dutch}
 \chapter*{Samenvatting}
-\lipsum[1-4]
 \selectlanguage{english}
 }{}
 
@@ -45,4 +44,24 @@
 
 \chapter*{\IfLanguageName{dutch}{Samenvatting}{Abstract}}
 
-TODO
+Binnen VLAIO vormt de complexe data-ar\-chi\-tec\-tuur een uitdaging voor datatransparantie. De grootste zichtbaarheidskloof bevindt zich in de laatste stap van de keten, namelijk de verbinding tussen Data\-bricks-ta\-bel\-len en Power BI-rap\-por\-ten. Zonder deze geïntegreerde lineage verloopt het inschatten van impact bij wijzigingen grotendeels via manueel zoekwerk en impliciete kennis. Daarnaast maakt dit het ook moeilijk voor rapportconsumenten om waarden in rapporten te begrijpen en vertrouwen.\\
+
+Deze bachelorproef onderzoekt eerst hoe deze technische kloof gedicht kan worden en evalueert vervolgens wat de concrete meerwaarde is van dit overzicht voor verschillende gebruikersprofielen binnen VLAIO. 
+\begin{quote}
+	\textbf{In welke mate verhoogt een geautomatiseerd li\-ne\-age-over\-zicht in OpenMetadata de transparantie en ervaren begrijpbaarheid van rapporten en impactanalyses bij VLAIO?}
+\end{quote}
+
+Het onderzoek start met een analyse van de praktijkcontext. Vervolgens wordt een proof-of-concept (PoC) uitgewerkt die metadata uit Databricks gebruikt om via OpenMetadata automatisch lineage te genereren tussen Power BI-rap\-por\-ten en hun onderliggende Data\-bricks-ta\-bel\-len. Ten slotte wordt de meerwaarde van de gerealiseerde PoC via een online vragenlijst geëvalueerd bij 24 VLAIO-medewerkers.\\
+
+De resultaten hiervan tonen aan dat het li\-ne\-age-over\-zicht de zichtbaarheidskloof succesvol verkleint. Driekwart van de respondenten geeft aan dat de visualisatie helpt om sneller te zien waar data vandaan komt en welke rapporten geraakt worden door wijzigingen. Ruim 87,5\% zegt dat het overzicht helpt om rapporten beter te begrijpen en 70,8\% heeft meer vertrouwen in een rapport als de oorsprong van de data bekend is. Ook het inschatten van geïmpacteerde onderdelen wordt als makkelijker gezien. De meeste respondenten zien het overzicht als een tool die ze ook effectief zouden gebruiken in hun werk. Het lineage-overzicht biedt dus een duidelijke meerwaarde en de bereidheid om het effectief te gebruiken is groot.\\
+
+Tegelijk legt de evaluatie de grenzen van de PoC bloot. Hoewel de respondenten dit een handige tool voor oriëntatie vinden, wordt het niet als een complete analysetool gezien. Slechts 41,7\% vindt dat het detailniveau volstaat om cijfers echt te begrijpen. Rapportconsumenten ervaren de overzichten als te abstract om ze zelfstandig te kunnen interpreteren. Meerdere respondenten vragen expliciet voor een koppeling met begrijpbare businessdefinities en transformatielogica op kolomniveau.\\
+
+Op basis van deze inzichten worden vier aanbevelingen geformuleerd voor VLAIO: 
+\begin{enumerate}
+	\item Het uitbreiden van de lineage naar kolomniveau;
+	\item Een koppeling van lineage aan businessdefinities (glossaries);
+	\item Het opnemen van OpenMetadata in het bestaande change- en releaseproces;
+	\item Het voorzien van laagdrempelige toegang tot de lineage-views voor niet-tech\-nische gebruikers;
+\end{enumerate} 
+Op deze manier vormt deze studie een concrete, overdraagbare basis om van OpenMetadata een volwaardig go\-ver\-nance-tool te maken binnen VLAIO.

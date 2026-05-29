@@ -44,7 +44,7 @@ Naast de twee hoofdnotebooks bevat de repository een aantal scripts en notebooks
 	\item \texttt{Create\_OpenMetadata\_lineage.py}: eerste volledige eenvoudige versie van de lineageflow, waarin dashboards worden aangemaakt en lineage-relaties worden gelegd op basis van CSV- en YAML-mappings
 \end{itemize}
 
-Tokens en andere geheimen worden niet in de notebooks zelf opgeslagen, maar via een lokale \texttt{.env}-configuratie ingelezen, zodat de code zelf herbruikbaar blijft zonder gevoelige informatie prijs te geven.\\
+Tokens en andere geheimen worden niet in de notebooks zelf opgeslagen, maar via een lokale \texttt{.env}-configuratie ingelezen. Zo blijft de code zelf herbruikbaar, zonder gevoelige informatie prijs te geven. Naast de JWT-token worden ook de OpenMetadata API-URL (\texttt{OM\_HOST}), de dashboardservice (\texttt{DASHBOARD\_SERVICE}) en de database-identifiers uit dit \texttt{.env}-bestand gelezen. De SQL-tabelnamen (\texttt{SILVER\_DATASET\_TABLE}, \texttt{SILVER\_REPORT\_TABLE}) zijn als variabelen centraal bovenaan de notebook gedefinieerd. Hierdoor moeten bij een eventuele productie-uitrol enkel deze configuratiewaarden aangepast worden, zonder wijzigingen aan de logica zelf.\\
 
 \section{Datasets en metadata-bronnen}
 
@@ -67,7 +67,7 @@ Binnen OpenMetadata was de platinum laag al aanwezig door de koppeling met Datab
 
 Omdat OpenMetadata in de huidige VLAIO-omgeving niet rechtstreeks kan verbinden met de Power BI REST API, werd gebruikgemaakt van de afgeleide Power BI-metadata die reeds onder vele tabellen in Databricks beschikbaar is. Deze tabellen waren niet vooraf gedocumenteerd voor het doel van lineage, waardoor eerst manueel onderzocht moest worden welke data hieruit gebruikt kon worden om een overzicht van rapporten en bijbehorende datasets op te bouwen. Na het verkennen van de relevante tabellen werd onderstaande query opgesteld als basis om alle rapporten met hun datasetnaam te extraheren. Hiermee was de nodige metadata aanwezig om de dash\-board-en\-ti\-tei\-ten aan te maken en deze nadien te koppelen aan de bron tabel uit de platinum laag.\\
 
-Deze brontabellen bevatten historische snapshots volgens het \textit{Slowly Changing Dimension} (SCD) Type 2\footnote{Bij SCD Type 2 wordt een nieuwe record aangemaakt telkens een gegeven wijzigt, in plaats van de bestaande record te overschrijven. Zo blijft de volledige historiek bewaard.}, waarbij elke record wordt beheerd met de kolommen \texttt{RawDataStartDatum} en \texttt{RawDataEindDatum}. Om dus een actueel overzicht op te bouwen, is het belangrijk om uitsluitend de meest recente snapshot van elk rapport te selecteren. Hiervoor wordt gebruikgemaakt van het Boolean-veld \texttt{RawDataIsCurrent}. De gebruikte query ziet er uit als volgt:
+Deze brontabellen bevatten historische snapshots volgens het \textit{Slowly Changing Dimension type 2} (SCD) Type 2\footnote{Bij SCD Type 2 wordt een nieuwe record aangemaakt telkens een gegeven wijzigt, in plaats van de bestaande record te overschrijven. Zo blijft de volledige historiek bewaard.}, waarbij elke record wordt beheerd met de kolommen \texttt{RawDataStartDatum} en \texttt{RawDataEindDatum}. Om dus een actueel overzicht op te bouwen, is het belangrijk om uitsluitend de meest recente snapshot van elk rapport te selecteren. Hiervoor wordt gebruikgemaakt van het Boolean-veld \texttt{RawDataIsCurrent}. De gebruikte query ziet er uit als volgt:
 
 \begin{lstlisting}[language=SQL, caption={Query om de meest recente Power BI-metadata te selecteren}, label={lst:powerbirest-query}]
 	SELECT r.RapportNaam, 
@@ -78,10 +78,12 @@ Deze brontabellen bevatten historische snapshots volgens het \textit{Slowly Chan
 	FROM ccdata_dev.silver.powerbirestapi_report r
 	JOIN ccdata_dev.silver.powerbirestapi_dataset d
 	ON r.DatasetID = d.DatasetID
-	WHERE r.RawDataIsCurrent = true
+	WHERE r.RawDataIsCurrent = true AND d.RawDataIsCurrent = true
 	AND d.RawDataIsCurrent = true
 	ORDER BY d.DatasetNaam, r.RapportNaam;
 \end{lstlisting}
+
+In de implementatie worden de tabelnamen niet hardgecodeerd maar via f-strings met de variabelen \texttt{SILVER\_REPORT\_TABLE} en \texttt{SILVER\_DATASET\_TABLE} ingevuld, zodat de query ongewijzigd werkt in zowel de dev als productie-omgeving.\\
 
 De kolom \texttt{RapportOmschrijving} werd hier bewust niet gebruikt, omdat deze in de praktijk vrijwel altijd leeg bleek en dus weinig meerwaarde had voor de PoC. Indien deze ingevuld is kan deze ook meegegeven worden aan OpenMetadata. In de huidige implementatie wordt deze query rechtstreeks vanuit de notebook uitgevoerd met spark, waardoor de resultaten onmiddellijk beschikbaar zijn voor verdere verwerking. De resultaten worden vervolgens weggeschreven naar een CSV-bestand als tussenstap, zodat de daaropvolgende stappen op de cluster kunnen draaien zonder opnieuw de SQL-query uit te voeren.\\
 
@@ -203,16 +205,16 @@ De YAML-opzet blijft hierdoor bovendien makkelijk uitbreidbaar en aanpasbaar. Ni
 
 De lineage-pipeline verloopt in meerdere stappen, van het ophalen van Power BI-metadata in Databricks tot zichtbare lineage op OpenMetadata. Deze volledige flow wordt uitgevoerd vanuit de notebook \texttt{detect\_changes\_and\_apply\_lineage} en bestaat uit:
 \begin{enumerate}
-	\item Ophalen van alle Power BI-rapporten en bijhorende datasetnamen via een SQL-query op de Databricks-tabellen (Spark).
+	\item Ophalen van alle Power BI-rapporten en bijhorende datasetnamen via een SQL-query op de Databricks-tabellen (Spark), gefilterd op \texttt{RawDataIsCurrent = true}.
 	\item Exporteren van de queryresultaten naar een CSV-bestand als tussenstap.
-	\item Opzoeken van de YAML-mappings en filteren op rapporten waarvoor een geldige mapping bestaat naar minstens een platinum-tabel. Ongemapte datasets worden automatisch weggeschreven naar (\texttt{unmapped_datasets.csv}).
-	\item Een prefetch van alle bestaande dashboards in OpenMetadata, zodat reeds aangemaakte entiteiten niet opnieuw worden gecreeerd.
-	\item Parallel aanmaken van dash\-board en\-ti\-tei\-ten in OpenMetadata voor de gefilterde rapporten.
+	\item Opzoeken van de YAML-mappings en filteren op rapporten waarvoor een geldige mapping bestaat naar minstens een platinum-tabel. Ongemapte datasets worden automatisch weggeschreven naar \texttt{unmapped\_datasets.csv}.
+	\item Een prefetch van alle bestaande dashboards in OpenMetadata en categorisatie van elk rapport in drie paden: nieuw (aanmaken), te updaten (naam gewijzigd), of over te slaan (ongewijzigd).
+	\item Parallel aanmaken of updaten van dash\-board-en\-ti\-tei\-ten in OpenMetadata voor de gecategoriseerde rapporten.
 	\item Parallel aanmaken van lineage-edges van de relevante platinum-tabellen naar de aangemaakte dashboards.
 	\item Wegschrijven van gedetailleerde logging naar een logbestand.
 \end{enumerate}
 
-In de Power BI REST API-tabellen zijn in totaal 4194 rapportrijen aanwezig. Dit totaalcijfer bevat echter een groot aantal verouderde snapshots van dezelfde rapporten. Door in de SQL-query specifiek te filteren op de meest recente status, worden enkel de 1165 unieke, actuele rapporten opgehaald. Hiervan hebben 467 rapporten een geldige mapping in de YAML-configuratie die effectief verwijst naar minstens één bestaande platinum-tabel in OpenMetadata. Enkel deze 467 rapporten worden vervolgens doorgestuurd naar de dashboardcreatie- en lineage-stappen. Deze strikte filtering voorkomt dat er onnodige of onvolledige entiteiten in OpenMetadata worden aangemaakt.\\
+In de Power BI REST API-tabellen zijn in totaal 4194 rapportrijen aanwezig. Dit totaalcijfer bevat echter een groot aantal verouderde snapshots van dezelfde rapporten. Door in de SQL-query specifiek te filteren op de meest recente status, worden enkel de 1165 unieke, actuele rapporten opgehaald. Hiervan hebben 464 rapporten een geldige mapping in de YAML-configuratie, die effectief verwijst naar minstens één bestaande platinum-tabel in OpenMetadata. Enkel deze rapporten worden vervolgens doorgestuurd naar de dashboardcreatie- en lineage-stappen. Deze filtering voorkomt dat er onnodige of onvolledige entiteiten in OpenMetadata worden aangemaakt.\\
 
 De focus ligt op lineage op tabelniveau: voor elk rapport wordt minstens een lineage-edge gelegd vanaf de belangrijkste platinum-tabel naar het dashboard, aangevuld met extra edges bij samengestelde datasets. Op die manier ontstaat er een visueel traceerbare keten van bronsystemen via medallion-lagen (bronze, silver, platinum) tot en met de rapportages.\\
 
@@ -222,16 +224,16 @@ Onderstaande paragrafen beschrijven de kernlogica uit de notebook. Ter ondersteu
 
 \paragraph{OpenMetadata-connectie}
 
-Dit codefragment initialiseert de verbinding met OpenMetadata en zorgt ervoor dat de notebook geauthenticeerd kan communiceren met OpenMetadata. Eerst wordt een JWT-token uit de omgevingsvariabelen geladen, waarna de connectieparameters voor de OpenMetadata-server en de dashboardservice worden ingesteld. Tot slot wordt gecontroleerd of de verbinding succesvol tot stand komt, zodat de volgende stappen enkel worden uitgevoerd wanneer de metadata-omgeving bereikbaar is. Hier worden ook de omgevingsvariabelen voor de FQN ingesteld.\\
+Dit codefragment initialiseert de verbinding met OpenMetadata en zorgt ervoor dat de notebook geauthenticeerd kan communiceren met OpenMetadata. Eerst wordt een JWT-token uit de omgevingsvariabelen geladen, waarna de connectieparameters voor de OpenMetadata-server en de dashboardservice worden ingesteld. Deze parameters worden uitgelezen uit het \texttt{environment} bestand en zijn niet hardgecodeerd. Dit zorgt ervoor dat het makkelijk herbruikbaar is in de productieomgeving. Bij een eventuele uitrol moeten enkel de omgevinsgvariabelen in \texttt(.env) aangepast worden en niets in de code zelf. Tot slot wordt gecontroleerd of de verbinding succesvol tot stand komt, zodat de volgende stappen enkel worden uitgevoerd wanneer de metadata-omgeving bereikbaar is. Hier worden ook de omgevingsvariabelen voor de FQN ingesteld.\\
 
 \begin{lstlisting}[language=python, caption={OpenMetadata clientconnectie}, label={lst:om-connectie}]
 # (hier worden alle imports en omgevingsvariabelen geladen)
 jwt = os.getenv("JWT_SECRET")
 
 # Hier wordt de OpenMetadata-host en de dashboardservice ingesteld
-OM_HOST = "https://omd.data-services-dev.vlaio.be/api"
-DASHBOARD_SERVICE = "VLAIO_POWERBI_TEST"
-OM_DATABASE_SCHEMA = "lz02-d-dbw-ccdata-main.platinum_dev"
+OM_HOST = os.getenv("OM_HOST", "https://omd.data-services-dev.vlaio.be/api")
+DASHBOARD_SERVICE = os.getenv("DASHBOARD_SERVICE", "VLAIO_POWERBI_TEST")
+OM_DATABASE_SCHEMA = os.getenv("OM_DATABASE_SCHEMA, "lz02-d-dbw-ccdata-main.platinum_dev")
 
 # Serverconfiguratie voor de OpenMetadata-client
 server_config = OpenMetadataConnection(
@@ -292,40 +294,56 @@ df_mappable = df_unique[df_unique["DatasetNaam"].apply(
 
 \paragraph{Prefetch en parallelle dashboardcreatie}
 
-Alvorens nieuwe dashboards aan te maken, worden alle bestaande dashboards in de Open\-Meta\-data-ser\-vice opgehaald en geindexeerd op \texttt{RapportID}. Dit zorgt ervoor dat de workflow herbruikbaar blijft, wanneer er nieuwe rapport-data binnenkomt in Databricks. Als de pipeline opnieuw wordt uitgevoerd, worden reeds bestaande dashboards herkend en overgeslagen zonder dubbels te creeren. Daarna gebeurt de dashboardcreatie parallel via een \texttt{ThreadPoolExecutor}\footnote{Met een ThreadPoolExecutor kan je  meerdere taken gelijktijdig uitvoeren door ze te verdelen over een groep van parallelle threads.}, waarbij meerdere API-calls gelijktijdig worden verstuurd om de totale doorlooptijd te minimaliseren. Om de OpenMetadata-API niet te overbelasten, wordt het aantal parallelle werkers begrensd en wordt de HTTP-verbindingspool\footnote{Een HTTP-verbindingspool beheert een set herbruikbare verbindingen met een API. Door deze af te stemmen op het aantal threads wordt vermeden dat threads op elkaar moeten wachten voor een beschikbare verbinding.} afgestemd op het aantal actieve threads.\\
+Alvorens nieuwe dashboards aan te maken, worden alle bestaande dashboards in de Open\-Meta\-data-ser\-vice opgehaald en geïndexeerd op hun \texttt{name}-veld, dat overeenkomt met het \texttt{RapportID} (dit is een stabiele UUID). Hierbij wordt \texttt{RapportID} als \texttt{name} binnen OpenMetadata gebruikt en de leesbare \texttt{RapportNaam} als \texttt{displayName}, om worden naamconflicten vermeden. Zo worden twee rapporten met dezelfde naam maar een ander ID correct onderscheiden. Wanneer twee personen dus toevallig dezelfde rapportnaam kiezen, levert dit geen fout op en worden deze gezien als twee unieke rapporten.\\
+Dit zorgt er ook voor dat de workflow herbruikbaar blijft, wanneer er nieuwe rapport-data binnenkomt in Databricks. Als de pipeline opnieuw wordt uitgevoerd, worden reeds bestaande dashboards herkend en overgeslagen zonder dubbels te creeren.\\
+
+Op basis van deze prefetch wordt elk rapport gecategoriseerd in drie paden:
+\begin{itemize}
+	\item \textbf{Create}: het \texttt{RapportID} bestaat nog niet in OpenMetadata, dus er wordt een nieuw dashboard aangemaakt.
+	\item \textbf{Update}: het \texttt{RapportID} bestaat al maar de \texttt{displayName} (= \texttt{RapportNaam}) is gewijzigd. het dashboard wordt bijgewerkt via \texttt{create\_or\_update}. Dit is nodig omdat rapporten in Power BI hernoemd kunnen worden terwijl het \texttt{RapportID} stabiel blijft (14 gevallen gevonden bij het testen).
+	\item \textbf{Skip}: het \texttt{RapportID} bestaat al met identieke \texttt{displayName}, dus er moet niets gebeuren.
+\end{itemize}
+
+Daarna gebeurt de dashboardcreatie parallel via een \texttt{ThreadPoolExecutor}\footnote{Met een ThreadPoolExecutor kan je  meerdere taken gelijktijdig uitvoeren door ze te verdelen over een groep van parallelle threads.}, waarbij meerdere API-calls gelijktijdig worden verstuurd om de totale doorlooptijd te minimaliseren. Om de OpenMetadata-API niet te overbelasten, wordt het aantal parallelle werkers begrensd en wordt de HTTP-verbindingspool\footnote{Een HTTP-verbindingspool beheert een set herbruikbare verbindingen met een API. Door deze af te stemmen op het aantal threads wordt vermeden dat threads op elkaar moeten wachten voor een beschikbare verbinding.} afgestemd op het aantal actieve threads.\\
 
 \begin{lstlisting}[language=python, caption={Prefetch en parallelle dashboardcreatie}, label={lst:parallel-dashboards}]
 MAX_WORKERS = 10
 POOL_SIZE = MAX_WORKERS + 5
-
-# Prefetch: indexeer bestaande dashboards op RapportID
+	
+# Prefetch: indexeer bestaande dashboards op name (= RapportID)
 existing_by_report_id = {}
-for dashboard in Dashboards.list_all():
-	# ... rapport ophalen en dashboard indexeren
-
-# Parallelle dashboardcreatie met ThreadPoolExecutor
-created_count = 0
-skipped_count = 0
-
-def create_single_dashboard(row):
-	rapport_id = row["RapportID"].lower()
-	if rapport_id in existing_by_report_id:
-		return "skipped"
+	for dashboard in Dashboards.list_all():
+		d_name = str(getattr(dashboard, 'name', '')).strip().lower()
+		if d_name:
+			existing_by_report_id[d_name] = dashboard
+	
+# Categoriseer: nieuw / update / skip
+new_reports, update_reports = [], []
+for _, row in df_mappable.iterrows():
+	rapport_id = row["RapportID"].strip().lower()
+	existing = existing_by_report_id.get(rapport_id)
+	if existing is None:
+		new_reports.append(row)
+	elif getattr(existing, 'displayName', '') != row["RapportNaam"]:
+		update_reports.append(row)
+	
+# Verwerk elk rapport: name=RapportID (stabiel), displayName=RapportNaam
+def process_report(row, mode='create'):
 	request = CreateDashboardRequest(
-		name=row["RapportNaam"], displayName=row["RapportNaam"],
+		name=row["RapportID"], displayName=row["RapportNaam"],
 		service=DASHBOARD_SERVICE, sourceUrl=row["WebUrl"],
 		description=f"Dashboard voor dataset {row['DatasetNaam']}.",)
-	try:
+	if mode == 'create':
 		dashboard = Dashboards.create(request)
-		existing_by_report_id[rapport_id] = dashboard
-		return "created"
-	except Exception as exc:
-		log.error(f"Fout bij {row['RapportNaam']}: {exc}")
-		return "error"
-
+	elif mode == 'update':
+		dashboard = metadata.create_or_update(data=request, ...)
+	return dashboard
+	
 with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-	futures = {executor.submit(create_single_dashboard, row): row
-		for _, row in df_mappable.iterrows()}
+	futures = [executor.submit(process_report, row, 'create')
+		for row in new_reports]
+	futures += [executor.submit(process_report, row, 'update')
+		for row in update_reports]
 	for future in as_completed(futures):
 		# ... resultaat ophalen en tellers bijwerken
 \end{lstlisting}
@@ -389,20 +407,23 @@ Bij de start van de notebook wordt een vergelijking gemaakt tussen de huidige st
 Na een succesvolle run wordt de verwerkte datum weggeschreven naar hetzelfde state-bestand, zodat de volgende uitvoering correct kan vergelijken tegen de laatst verwerkte staat. Onderstaand codefragment toont hoe deze change detection werkt:\\
 
 \begin{lstlisting}[language=python, caption={Change detection op basis van RawDataStartDatum}, label={lst:change-detection}]
-	STATE_FILE = f'{BASE}/Datasets/.last_processed_date'
-	last_processed = None
-	if os.path.exists(STATE_FILE):
-		with open(STATE_FILE, 'r') as f:
-			last_processed = f.read().strip()
-	
-	current_max_row = spark.sql("""
-		SELECT MAX(RawDataStartDatum) as max_date 
-		FROM ccdata_dev.silver.powerbirestapi_dataset""").collect()[0]
+# Centraal gedefinieerde tabelnamen (aanpasbaar per omgeving)
+SILVER_DATASET_TABLE = 'ccdata_dev.silver.powerbirestapi_dataset'
+SILVER_REPORT_TABLE = 'ccdata_dev.silver.powerbirestapi_report'
+
+STATE_FILE = f'{BASE}/Datasets/.last_processed_date'
+last_processed = None
+if os.path.exists(STATE_FILE):
+	with open(STATE_FILE, 'r') as f:
+		last_processed = f.read().strip()
+
+current_max_row = spark.sql(f"""SELECT MAX(RawDataStartDatum) as max_date 
+	FROM {SILVER_DATASET_TABLE}""").collect()[0]
 	current_max = str(current_max_row.max_date)
-	
-	if last_processed and current_max <= last_processed:
-		dbutils.notebook.exit(json.dumps(
-			{'status': 'no_changes', 'last_date': current_max}))
+
+if last_processed and current_max <= last_processed:
+	dbutils.notebook.exit(json.dumps(
+		{'status': 'no_changes', 'last_date': current_max}))
 \end{lstlisting}
 
 \subsection{Herhaalbaarheid en incrementele verwerking}
@@ -411,7 +432,7 @@ De pipeline is specifiek ontworpen om herhaalbaar te zijn. De notebook kan meerd
 
 \begin{itemize}
 	\item \textbf{Filtering op unieke rapporten}: de SQL-query filtert via \texttt{RawDataIsCurrent = true} zodat enkel de actuele snapshot per rapport en dataset wordt opgehaald, waardoor duplicaten aan de bron al worden uitgesloten.
-	\item \textbf{Pre-fetch van bestaande dashboards}: voor nieuwe dashboards aan te maken worden alle reeds bestaande dashboards in OpenMetadata opgehaald. Rapporten waarvoor al een dashboard bestaat worden overgeslagen.
+	\item \textbf{Pre-fetch en categorisatie}: voor de verwerking worden alle bestaande dashboards opgehaald en gematcht op \texttt{dashboard.name == RapportID}. Hierbij worden rapporten gecategoriseerd in drie paden: nieuw (aanmaken), te updaten (naam gewijzigd), of over te slaan (ongewijzigd).
 	\item \textbf{Filtering op lineage-paren}: een set van reeds aangemaakte combinaties voorkomt dat identieke lineage-edges meerdere keren worden verstuurd naar de API.
 \end{itemize}
 
@@ -501,21 +522,32 @@ Om die redenen werd in overleg besloten om lineage op kolomniveau buiten de scop
 
 \section{Visuele voorstelling van lineage}
 
-In deze sectie staan enkele concrete visualisaties van de lineage in OpenMetadata. De toegevoegde waarde van deze PoC uit zich in de praktijk via twee concrete scenario's: het traceren van de herkomst vanaf een specifiek rapport en het inschatten van de impact vanaf een centrale dataset.\\
+In deze sectie wordt het visuele resultaat van de PoC getoond vanuit de gebruikersinterface van OpenMetadata. Daarnaast staan er enkele concrete visualisaties van de lineage van deze rapporten.\\
 
-Ten eerste maakt het platform het mogelijk om vanuit de business-omgeving terug te redeneren naar de bron (upstream lineage). Wanneer een eindgebruiker twijfelt over de data in een specifiek dashboard, kan via de gebruikersinterface van OpenMetadata gemakkelijk worden gecontroleerd welke platinum-dataset de bron vormt. In Figuur~\ref{fig:lineage_steun_rep} en Figuur~\ref{fig:lineage_kris_rep} is dit zichtbaar. Dit lost de `zichtbaarheidskloof' op dat besproken werd in vorig hoofdstuk. Een moet dus niet langer in de Power BI-instellingen of Databricks-notebooks zoeken naar de achterliggende databron.\\
+Naast de weergave van de lineage zelf, biedt OpenMetadata een goede zoekbaarheid op de centrale dashboard voor rapporten. Figuur~\ref{fig:openmetadata-dashboards} toont hoe de aangemaakte rapporten overzichtelijk gebundeld worden. Doordat de rapporten zijn ingesteld met hun logische rapportnaam als \texttt{displayName}), kan iemand makkelijk zijn rapport zoeken. Vanuit dit overzicht kan een gebruiker dan rechts op de URL klikken om naar het werkelijke rapport in de Power BI-omgeving te gaan, alsook doorklikken op het herkomstoverzicht.\\
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.9\textwidth]{images/rapport_steunster.png}
-	\caption{Upstream lineage: van een specifiek Steunster Power BI-rapport terugzoeken naar de onderliggende platinum-dataset.}
-	\label{fig:lineage_steun_rep}
+	\includegraphics[width=\textwidth]{images/om-dashboard.png}
+	\caption{OpenMetadata Dashboard}
+	\label{fig:openmetadata-dashboard}
+\end{figure}
+
+De toegevoegde waarde van deze PoC uit zich in de praktijk via twee concrete scenario's, namelijk het traceren van de herkomst vanaf een specifiek rapport en het inschatten van de impact vanaf een centrale dataset.\\
+
+Ten eerste maakt het platform het mogelijk om vanuit de bu\-si\-ness-om\-ge\-ving terug te redeneren naar de bron (upstream lineage). Wanneer een eindgebruiker twijfelt over de data in een specifiek dashboard, kan via de gebruikersinterface van OpenMetadata gemakkelijk worden gecontroleerd welke platinum-dataset de bron vormt. Op Figuur~\ref{fig:lineage_bedrijvents_rep} en Figuur~\ref{fig:lineage_kris_rep} is dit zichtbaar. Dit lost de `zichtbaarheidskloof' op dat besproken werd in vorig hoofdstuk. Een moet dus niet langer in de Power BI-instellingen of Databricks-notebooks zoeken naar de achterliggende databron.\\
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{images/rapport_bedrijven.png}
+	\caption{Upstream lineage bedrijventerreinster}
+	\label{fig:lineage_bedrijvents_rep}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.9\textwidth]{images/rapport_krissteunster.png}
-	\caption{Upstream lineage: van een specifiek Krissteunster Power BI-rapport terugzoeken naar de onderliggende platinum-dataset.}
+	\caption{Upstream lineage krissteunster}
 	\label{fig:lineage_kris_rep}
 \end{figure}
 
